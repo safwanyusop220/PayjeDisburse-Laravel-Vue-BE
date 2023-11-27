@@ -1,0 +1,201 @@
+[
+  {
+    "id": "1",
+    "name": "AmBank",
+    "bnm_code": "08-AmBank Berhad",
+    "logo": "images/banks/ambank.png"
+  },
+  {
+    "id": "2",
+    "name": "Al-Rajhi Bank",
+    "bnm_code": "53-Al-Rajhi Banking and Investment Corporation (Malaysia) Berhad",
+    "logo": "images/banks/al-rajhi-bank.png"
+  },
+  {
+    "id": "3",
+    "name": "Alliance Bank",
+    "bnm_code": "12-Alliance Bank Berhad",
+    "logo": "images/banks/alliance-bank.png"
+  },
+  {
+    "id": "4",
+    "name": "Affin Bank",
+    "bnm_code": "32-Affin Bank Berhad",
+    "logo": "images/banks/affin-bank.png"
+  },
+  {
+    "id": "5",
+    "name": "Agro Bank",
+    "bnm_code": "49-Agro Bank",
+    "logo": "images/banks/agro-bank.png"
+  },
+  {
+    "id": "6",
+    "name": "Bank of China",
+    "bnm_code": "42-Bank of China (Malaysia) Berhad",
+    "logo": "images/banks/bank-of-china.png"
+  },
+  {
+    "id": "7",
+    "name": "Bank Muamalat",
+    "bnm_code": "41-Bank Muamalat Malaysia Berhad",
+    "logo": "images/banks/bank-mualamat.png"
+  },
+  {
+    "id": "8",
+    "name": "Bank Islam",
+    "bnm_code": "45-Bank Islam Malaysia Berhad",
+    "logo": "images/banks/bank-islam.png"
+  },
+  {
+    "id": "9",
+    "name": "Bank Rakyat",
+    "bnm_code": "02-Bank Rakyat Berhad",
+    "logo": "images/banks/bank-rakyat.png"
+  },
+  {
+    "id": "10",
+    "name": "Bank Simpanan Nasional",
+    "bnm_code": "10-Bank Simpanan Nasional Berhad",
+    "logo": "images/banks/bank-simpanan-nasional.png"
+  },
+  {
+    "id": "11",
+    "name": "Bank of America",
+    "bnm_code": "07-Bank of America",
+    "logo": "images/banks/bank-of-america.png"
+  },
+  {
+    "id": "12",
+    "name": "MUFG Bank",
+    "bnm_code": "52-Bank of Tokyo-Mitsubishi UFJ (Malaysia) Berhad",
+    "logo": "images/banks/mufg-bank.png"
+  },
+  {
+    "id": "13",
+    "name": "BNP Paribas",
+    "bnm_code": "60-BNP Paribas (M) Bhd / BNP Paribas (Islamic)",
+    "logo": "images/banks/bnp-paribas.png"
+  },
+  {
+    "id": "14",
+    "name": "CIMB Bank",
+    "bnm_code": "35-CIMB Bank Berhad",
+    "logo": "images/banks/cimb-bank.png"
+  },
+  {
+    "id": "15",
+    "name": "Citibank",
+    "bnm_code": "17-Citibank",
+    "logo": "images/banks/citibank.png"
+  },
+  {
+    "id": "16",
+    "name": "Deutsche Bank",
+    "bnm_code": "19-Deutsche Bank (M) Bhd",
+    "logo": "images/banks/deutsche-bank.png"
+  },
+  {
+    "id": "17",
+    "name": "Hong Leong Bank",
+    "bnm_code": "24-Hong Leong Bank Berhad/ Hong Leong Finance",
+    "logo": "images/banks/hong-leong-bank.png"
+  },
+  {
+    "id": "18",
+    "name": "HSBC Bank",
+    "bnm_code": "22-HSBC Bank Berhad",
+    "logo": "images/banks/hsbc-bank.png"
+  },
+  {
+    "id": "19",
+    "name": "Industrial and Commercial Bank of China",
+    "bnm_code": "59-Indust & Comm Bank of China (M) Berhad",
+    "logo": "images/banks/industrial-and-commercial-bank-of-china.png"
+  },
+  {
+    "id": "20",
+    "name": "JP Morgan Chase",
+    "bnm_code": "48-JP Morgan Chase",
+    "logo": "images/banks/jp-morgan-chase.png"
+  },
+  {
+    "id": "21",
+    "name": "Kuwait Finance House",
+    "bnm_code": "47-Kuwait Finance House",
+    "logo": "images/banks/kuwait-finance-house.png"
+  },
+  {
+    "id": "22",
+    "name": "Maybank",
+    "bnm_code": "27-Malayan Banking Berhad",
+    "logo": "images/banks/maybank.png"
+  },
+  {
+    "id": "23",
+    "name": "Mizuho Bank",
+    "bnm_code": "73-Mizuho Bank (M) Berhad",
+    "logo": "images/banks/mizuho-bank.png"
+  },
+  {
+    "id": "24",
+    "name": "OCBC Bank",
+    "bnm_code": "29-OCBC Bank Berhad",
+    "logo": "images/banks/ocbc-bank.png"
+  },
+  {
+    "id": "25",
+    "name": "Public Bank",
+    "bnm_code": "33-Public Bank Berhad/ Public Finance Berhad",
+    "logo": "images/banks/public-bank.png"
+  },
+  {
+    "id": "26",
+    "name": "RHB Bank",
+    "bnm_code": "18-RHB Bank Berhad",
+    "logo": "images/banks/rhb-bank.png"
+  },
+  {
+    "id": "27",
+    "name": "Standard Chartered Bank",
+    "bnm_code": "14-Standard Chartered Bank Berhad",
+    "logo": "images/banks/standard-chartered-bank.png"
+  },
+  {
+    "id": "28",
+    "name": "Sumitomo Mitsui Banking Corporation",
+    "bnm_code": "51-Sumitomo Mitsui Banking Corporation (M) Bhd",
+    "logo": "images/banks/sumitomo-mitsui-banking-corporation.png"
+  },
+  {
+    "id": "29",
+    "name": "The Royal Bank of Scotland",
+    "bnm_code": "46-The Royal Bank of Scotland Bhd",
+    "logo": "images/banks/royal-bank-of-scotland.png"
+  },
+  {
+    "id": "30",
+    "name": "United Overseas Bank",
+    "bnm_code": "26-United Overseas Bank (M) Bhd",
+    "logo": "images/banks/united-overseas-bank.png"
+  },
+  {
+    "id": "31",
+    "name": "China Construction Bank",
+    "bnm_code": "65-China Construction Bank (Malaysia) Berhad",
+    "logo": "images/banks/china-construction-bank.png"
+  },
+  {
+    "id": "32",
+    "name": "Bangkok Bank",
+    "bnm_code": "04-Bangkok Bank Berhad",
+    "logo": "images/banks/bangkok-bank.png"
+
+  },
+  {
+    "id": "33",
+    "name": "MBSB",
+    "bnm_code": "75-MBSB",
+    "logo": "images/banks/mbsb.png"
+  }
+]
