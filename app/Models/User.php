@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -42,4 +44,27 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function audit_trail()
+    {
+        return $this->hasMany(AuditTrail::class);
+    }
+
+    public function log($message, $model=null)
+    {
+        $message = ucwords($message);
+        $now = Carbon::now('Asia/Kuala_Lumpur');
+
+        $data = [
+            'user_id'     => $this->id,
+            'name'        => $this->name,
+            'date'        => strval($now->format('d/m/Y')),
+            'time'        => strval($now->format('h:i A')),
+            'activity_id' => "$message",
+            'model'       => $model
+        ];
+
+        AuditTrail::query()->create($data);
+
+    }
 }

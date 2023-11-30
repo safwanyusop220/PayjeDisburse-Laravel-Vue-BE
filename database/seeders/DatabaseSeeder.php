@@ -12,6 +12,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(UserSeeder::class);
+        $this->call(ActivitySeeder::class);
         $this->call(RefBankSeeder::class);
         $this->call(BankPanelSeeder::class);
         $this->call(ProgramTypeSeeder::class);
