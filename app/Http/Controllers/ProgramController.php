@@ -6,7 +6,7 @@ use App\Models\BankPanel;
 use App\Models\InstallmentProgram;
 use App\Models\Program;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class ProgramController extends Controller
 {
@@ -23,6 +23,8 @@ class ProgramController extends Controller
 
     public function store(Request $request)
     {
+        $user = Auth::user();
+
         $program = new Program();
         $program->name            = $request->name; 
         $program->code            = $request->code; 
@@ -60,7 +62,8 @@ class ProgramController extends Controller
             }
         }
 
-        
+        $user = $request->user();
+        $user->log(Program::ACTIVITY_CREATED, "App\Models\Program");
 
         return response()->json([
             'message' => 'Program Created Successfully',
@@ -93,7 +96,10 @@ class ProgramController extends Controller
                     'reject_reason' => '-'
                 ]);
             });
-    
+
+            $user = $request->user();
+            $user->log(Program::ACTIVITY_RECOMMENDED, "App\Models\Program");
+
             return response()->json(['message' => 'Programs successfully endorsed'], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error endorsing programs'], 500);
@@ -115,6 +121,9 @@ class ProgramController extends Controller
                 'status_id' => Program::STATUS_RECOMMENDED,
                 'reject_reason' => '-'
             ]);
+
+            $user = $request->user();
+            $user->log(Program::ACTIVITY_RECOMMENDED, "App\Models\Program");
 
             return response()->json(['message' => 'Program successfully endorsed'], 200);
         } catch (\Exception $e) {
@@ -138,6 +147,9 @@ class ProgramController extends Controller
                 'reject_reason' => '-'
             ]);
 
+            $user = $request->user();
+            $user->log(Program::ACTIVITY_APPROVED, "App\Models\Program");
+
             return response()->json(['message' => 'Program successfully endorsed'], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error endorsing program'], 500);
@@ -158,6 +170,9 @@ class ProgramController extends Controller
                 ]);
             });
     
+            $user = $request->user();
+            $user->log(Program::ACTIVITY_APPROVED, "App\Models\Program");
+
             return response()->json(['message' => 'Programs successfully approved'], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error endorsing programs'], 500);
@@ -175,11 +190,15 @@ class ProgramController extends Controller
         ]);
     }
 
-    public function destroy($id)
+    public function destroy($id, Request $request)
     {
         $program = Program::find($id);
         if($program) {
             $program->delete();
+
+            $user = $request->user();
+            $user->log(Program::ACTIVITY_DELETED, "App\Models\Program");
+
             return response()->json([
                 'message' => 'Program Deleted Successfully',
                 'code'    => 200
@@ -213,6 +232,10 @@ class ProgramController extends Controller
         $program->total_month = $request->total_month;
         $program->total_year = $request->total_year; 
         $program->save();
+        
+        $user = $request->user();
+        $user->log(Program::ACTIVITY_UPDATED, "App\Models\Program");
+
         return response()->json([
             'message' => 'Program Updated Successfully',
             'code'    => 200
@@ -231,18 +254,19 @@ class ProgramController extends Controller
     }
 
     public function show($id)
-{
-    $program = Program::with('type', 'bankPanel', 'bankPanel.bank', 'frequency')->find($id);
+    {
+        $program = Program::with('type', 'bankPanel', 'bankPanel.bank', 'frequency')->find($id);
     
-    if (!$program) {
+        if (!$program) {
+
         return response()->json(['message' => 'Program not found'], 404);
+        }
+
+        $installmentPrograms = InstallmentProgram::where('program_id', $id)->get();
+
+        return response()->json([
+            'program' => $program,
+            'installmentPrograms' => $installmentPrograms,
+        ]);
     }
-
-    $installmentPrograms = InstallmentProgram::where('program_id', $id)->get();
-
-    return response()->json([
-        'program' => $program,
-        'installmentPrograms' => $installmentPrograms,
-    ]);
-}
 }
