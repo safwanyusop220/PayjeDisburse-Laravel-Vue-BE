@@ -20,31 +20,31 @@ class BankPanelController extends Controller
     }
 
     public function store(Request $request)
-{
-    try {
-        $bankPanel = new BankPanel();
-        $bankPanel->holder_name    = $request->holder_name; 
-        $bankPanel->bank_id        = $request->bank_id; 
-        $bankPanel->account_number = $request->account_number; 
-        $bankPanel->save();
-        
-        $user = $request->user();
-        $user->log(BankPanel::ACTIVITY_CREATED , "App\Models\BankPanel");
+    {
+        try {
+            $bankPanel = new BankPanel();
+            $bankPanel->holder_name    = $request->holder_name; 
+            $bankPanel->bank_id        = $request->bank_id; 
+            $bankPanel->account_number = $request->account_number; 
+            $bankPanel->save();
+            
+            $user = $request->user();
+            $user->log(BankPanel::ACTIVITY_CREATED , "App\Models\BankPanel");
 
-        return response()->json([
-            'message' => 'Bank Panel Created Successfully',
-            'data' => $bankPanel,
-            'testdata' => $user,
-            'code' => 200,
-        ]);
+            return response()->json([
+                'message' => 'Bank Panel Created Successfully',
+                'data' => $bankPanel,
+                'testdata' => $user,
+                'code' => 200,
+            ]);
 
-    } catch (\Exception $e) {
-        return response()->json([
-            'error' => 'An error occurred while creating the bank panel',
-            'code' => 500,
-        ], 500);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred while creating the bank panel',
+                'code' => 500,
+            ], 500);
+        }
     }
-}
 
     public function destroy($id, Request $request)
     {

@@ -20,11 +20,27 @@ class AuthController extends Controller
             'password'              => ['required',],
         ]);
 
-        User::create([
-            'name'      => $request->name,
-            'email'     => $request->email,
-            'password'  => Hash::make($request->password),
-        ]);
+        $user = new User();
+        $user->name            = $request->name; 
+        $user->email           = $request->email; 
+        $user->isCustomAccess  = $request->isCustomAccess; 
+        $user->password        = Hash::make($request->password); 
+        $user->role_id         = $request->role; 
+
+        $user->save();
+
+        if($request->has('role')){
+            $user->syncRoles($request->input('role.*.name'));
+        }
+        $user->roles()->attach($request->input('role'));
+
+        if($request->has('permissions')){
+            $user->syncPermissions($request->input('permissions.*.name'));
+        }
+        $user->permissions()->attach($request->input('permissions'));
+
+        $user = $request->user();
+        $user->log(User::ACTIVITY_CREATED, "App\Models\User");
 
         return response()->json([
             'message' => 'User registered Successfully'
@@ -55,7 +71,7 @@ class AuthController extends Controller
 
     public function user()
     {
-        $users = User::all();
+        $users = User::with('role')->orderBy('id', 'desc')->get();
         
         return response()->json([
             'users' => $users,
@@ -63,11 +79,14 @@ class AuthController extends Controller
         ]);
     }
 
-    public function destroy($id)
+    public function destroy($id, Request $request)
     {
         $user = User::find($id);
         if($user) {
             $user->delete();
+            $user = $request->user();
+
+            $user->log(User::ACTIVITY_DELETED, "App\Models\User");
             return response()->json([
                 'message' => 'User Deleted Successfully',
                 'code'    => 200

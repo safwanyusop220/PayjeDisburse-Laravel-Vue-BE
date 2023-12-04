@@ -9,8 +9,22 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::prefix('roles')->middleware('auth:sanctum')->group(function () {
+    Route::get('all/permission', [App\Http\Controllers\RoleController::class, 'AllPermission']);
+    Route::get('add/permission', [App\Http\Controllers\RoleController::class, 'AddPermission']);
+    Route::get('getPermissionGroups', [App\Http\Controllers\RoleController::class, 'getPermissionGroups']);
+    Route::post('/store', [App\Http\Controllers\RoleController::class, 'store']);
+    Route::post('/storeRole', [App\Http\Controllers\RoleController::class, 'storeRole']);
+
+    Route::get('all/roles', [App\Http\Controllers\RoleController::class, 'roles']);
+    Route::get('/rolePermission', [App\Http\Controllers\RoleController::class, 'addRolePermission']);
+
+    Route::get('/selectedRole/{id}', [App\Http\Controllers\RoleController::class, 'getSelectedPermissionRole']);
+
+});
+
 Route::prefix('authentications')->group(function () {
-    Route::post('/register', [App\Http\Controllers\AuthController::class, 'register']);
+    Route::post('/register', [App\Http\Controllers\AuthController::class, 'register'])->middleware('auth:sanctum');
     Route::post('/login', [App\Http\Controllers\AuthController::class, 'login']);
     Route::get('/user', [App\Http\Controllers\AuthController::class, 'user'])->middleware('auth:sanctum');
     Route::delete('/destroy/{id}', [App\Http\Controllers\AuthController::class, 'destroy']);
