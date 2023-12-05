@@ -29,6 +29,9 @@ Route::prefix('authentications')->group(function () {
     Route::get('/user', [App\Http\Controllers\AuthController::class, 'user'])->middleware('auth:sanctum');
     Route::delete('/destroy/{id}', [App\Http\Controllers\AuthController::class, 'destroy']);
     Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->middleware('auth:sanctum');
+    Route::get('/getCurrentUser/{id}', [App\Http\Controllers\AuthController::class, 'getCurrentUser'])->middleware('auth:sanctum');
+    Route::post('/update/{id}', [App\Http\Controllers\AuthController::class, 'updateUser'])->middleware('auth:sanctum');
+
 });
 
 // Route::post('authentications/logout', function () {

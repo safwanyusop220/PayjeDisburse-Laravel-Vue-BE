@@ -13,7 +13,7 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create(['name' => 'Marwan Ghazali', 'email' => 'marwan@edaran.com', 'password' => 'password1234', 'role_id' => 1]);
+        User::create(['name' => 'Marwan Mazli', 'email' => 'marwan@edaran.com', 'password' => 'password1234', 'role_id' => 1]);
         User::create(['name' => 'Abdillah Safwan', 'email' => 'safwan@edaran.com', 'password' => 'password1234', 'role_id' => 1]);
         User::create(['name' => 'Nadiatul Najihah', 'email' => 'nadia@edaran.com', 'password' => 'password1234', 'role_id' => 1]);
     }

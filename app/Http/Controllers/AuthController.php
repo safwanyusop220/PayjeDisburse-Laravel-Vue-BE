@@ -79,6 +79,26 @@ class AuthController extends Controller
         ]);
     }
 
+    public function getCurrentUser($id)
+    {
+        $user = User::with('role')->find($id);
+
+        return response()->json($user);
+    }
+
+    public function updateUser($id, Request $request)
+    {
+        $user = User::find($id);
+        $user->name = $request->name; 
+        $user->email = $request->email; 
+        $user->save();
+
+        return response()->json([
+            'message' => 'User Updated Successfully',
+            'code'    => 200
+        ]);
+    }
+
     public function destroy($id, Request $request)
     {
         $user = User::find($id);

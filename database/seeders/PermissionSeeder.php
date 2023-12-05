@@ -14,35 +14,35 @@ class PermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        Permission::create(['name' => 'View Bank Panel', 'group_name_id' => 1]);
-        Permission::create(['name' => 'Create Bank Panel', 'group_name_id' => 1]);
-        Permission::create(['name' => 'Update Bank Panel', 'group_name_id' => 1]);
-        Permission::create(['name' => 'Delete Bank Panel', 'group_name_id' => 1]);
+        Permission::create(['name' => 'View Bank Panel',   'group_name' => 'Bank Panel Module']);
+        Permission::create(['name' => 'Create Bank Panel', 'group_name' => 'Bank Panel Module']);
+        Permission::create(['name' => 'Update Bank Panel', 'group_name' => 'Bank Panel Module']);
+        Permission::create(['name' => 'Delete Bank Panel', 'group_name' => 'Bank Panel Module']);
 
-        Permission::create(['name' => 'View Program', 'group_name_id' => 2]);
-        Permission::create(['name' => 'Create Program', 'group_name_id' => 2]);
-        Permission::create(['name' => 'Update Program', 'group_name_id' => 2]);
-        Permission::create(['name' => 'Delete Program', 'group_name_id' => 2]);
+        Permission::create(['name' => 'View Program',   'group_name' => 'Program Module']);
+        Permission::create(['name' => 'Create Program', 'group_name' => 'Program Module']);
+        Permission::create(['name' => 'Update Program', 'group_name' => 'Program Module']);
+        Permission::create(['name' => 'Delete Program', 'group_name' => 'Program Module']);
 
-        Permission::create(['name' => 'View Recipient', 'group_name_id' => 3]);
-        Permission::create(['name' => 'Create Recipient', 'group_name_id' => 3]);
-        Permission::create(['name' => 'Update Recipient', 'group_name_id' => 3]);
-        Permission::create(['name' => 'Delete Recipient', 'group_name_id' => 3]);
+        Permission::create(['name' => 'View Recipient',   'group_name' => 'Recipient Module']);
+        Permission::create(['name' => 'Create Recipient', 'group_name' => 'Recipient Module']);
+        Permission::create(['name' => 'Update Recipient', 'group_name' => 'Recipient Module']);
+        Permission::create(['name' => 'Delete Recipient', 'group_name' => 'Recipient Module']);
 
-        Permission::create(['name' => 'View Payment', 'group_name_id' => 4]);
-        Permission::create(['name' => 'Create Payment', 'group_name_id' => 4]);
-        Permission::create(['name' => 'Update Payment', 'group_name_id' => 4]);
-        Permission::create(['name' => 'Delete Payment', 'group_name_id' => 4]);
+        Permission::create(['name' => 'View Payment',   'group_name' => 'Payment Module']);
+        Permission::create(['name' => 'Create Payment', 'group_name' => 'Payment Module']);
+        Permission::create(['name' => 'Update Payment', 'group_name' => 'Payment Module']);
+        Permission::create(['name' => 'Delete Payment', 'group_name' => 'Payment Module']);
 
-        Permission::create(['name' => 'View Report', 'group_name_id' => 5]);
-        Permission::create(['name' => 'Create Report', 'group_name_id' => 5]);
-        Permission::create(['name' => 'Update Report', 'group_name_id' => 5]);
-        Permission::create(['name' => 'Delete Report', 'group_name_id' => 5]);
+        Permission::create(['name' => 'View Report',   'group_name' => 'Report Module']);
+        Permission::create(['name' => 'Create Report', 'group_name' => 'Report Module']);
+        Permission::create(['name' => 'Update Report', 'group_name' => 'Report Module']);
+        Permission::create(['name' => 'Delete Report', 'group_name' => 'Report Module']);
 
-        Permission::create(['name' => 'View Audit Trail', 'group_name_id' => 6]);
-        Permission::create(['name' => 'Create Audit Trail', 'group_name_id' => 6]);
-        Permission::create(['name' => 'Update Audit Trail', 'group_name_id' => 6]);
-        Permission::create(['name' => 'Delete Audit Trail', 'group_name_id' => 6]);
+        Permission::create(['name' => 'View Audit Trail',   'group_name' => 'Audit Trail Module']);
+        Permission::create(['name' => 'Create Audit Trail', 'group_name' => 'Audit Trail Module']);
+        Permission::create(['name' => 'Update Audit Trail', 'group_name' => 'Audit Trail Module']);
+        Permission::create(['name' => 'Delete Audit Trail', 'group_name' => 'Audit Trail Module']);
 
         $adminRole = Role::findByName('Admin');
         $adminRole->givePermissionTo('View Bank Panel');
