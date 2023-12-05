@@ -28,8 +28,8 @@ return new class extends Migration
             $table->bigIncrements('id'); // permission id
             $table->string('name');       // For MySQL 8.0 use string('name', 125);
             $table->string('guard_name'); // For MySQL 8.0 use string('guard_name', 125);
-            $table->unsignedBigInteger('group_name_id')->nullable();
-            $table->foreign('group_name_id')->references('id')->on('permission_groups')->nullable();
+            $table->string('group_name')->nullable();
+            // $table->foreign('group_name_id')->references('id')->on('permission_groups')->nullable();
             $table->timestamps();
 
             $table->unique(['name', 'guard_name']);

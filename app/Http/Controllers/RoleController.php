@@ -11,7 +11,7 @@ class RoleController extends Controller
 {
     public function AllPermission()
     {
-        $permissions = Permission::with('permissionGroup')->get();
+        $permissions = Permission::all();
 
         return response()->json([
             'permissions' => $permissions,
@@ -65,7 +65,7 @@ class RoleController extends Controller
     {
         $permission = new Permission();
         $permission->name          = $request->name; 
-        $permission->group_name_id = $request->group_name_id; 
+        $permission->group_name = $request->group_name; 
         $permission->save();
 
         return response()->json([
@@ -78,8 +78,8 @@ class RoleController extends Controller
     public function addRolePermission()
     {
         $roles = Role::orderBy('id', 'desc')->get();
-        $permissions = Permission::with('permissionGroup')->get();
-        $groupedPermissions = $permissions->groupBy('group_name_id');
+        $permissions = Permission::all();
+        $groupedPermissions = $permissions->groupBy('group_name');
 
         return response()->json([
             'roles'       => $roles,
@@ -104,3 +104,5 @@ class RoleController extends Controller
         }
     }
 }
+
+// $permissions = Spatie\Permission\Models\Permission::join('permission_groups', 'permissions.group_name_id', '=', 'permission_groups.id')->select('permissions.*', 'permission_groups.*')->get();
