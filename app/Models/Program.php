@@ -21,8 +21,23 @@ class Program extends Model
 
 
     protected $fillable = [
-        'status_id'
+        'status_id',  'recommend_by_id', 'recommend_date', 'approved_by_id', 'approved_date'
     ];
+
+    public function created_by()
+    {
+        return $this->belongsTo(User::class, 'created_by_id');
+    }
+
+    public function recommend_by()
+    {
+        return $this->belongsTo(User::class, 'recommend_by_id');
+    }
+
+    public function approved_by()
+    {
+        return $this->belongsTo(User::class, 'approved_by_id');
+    }
 
     public function type()
     {
