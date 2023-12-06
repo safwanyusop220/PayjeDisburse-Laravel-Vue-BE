@@ -16,6 +16,17 @@ return new class extends Migration
             $table->timestamps();
             $table->string('code')->nullable();
             $table->string('name')->nullable();
+            $table->unsignedBigInteger('created_by_id')->nullable();
+            $table->foreign('created_by_id')->references('id')->on('users')->nullable();
+            
+            $table->unsignedBigInteger('recommend_by_id')->nullable();
+            $table->foreign('recommend_by_id')->references('id')->on('users')->default(0)->nullable();
+            $table->dateTime('recommend_date')->nullable();
+
+            $table->unsignedBigInteger('approved_by_id')->nullable();
+            $table->foreign('approved_by_id')->references('id')->on('users')->default(0)->nullable();
+            $table->dateTime('approved_date')->nullable();
+
             $table->unsignedBigInteger('type_id')->nullable();
             $table->foreign('type_id')->references('id')->on('program_types')->nullable();
             $table->unsignedBigInteger('disburse_amount')->nullable();

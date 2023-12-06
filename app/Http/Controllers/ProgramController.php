@@ -26,6 +26,7 @@ class ProgramController extends Controller
         $user = Auth::user();
 
         $program = new Program();
+        $program->created_by_id   = $request->created_by_id;
         $program->name            = $request->name; 
         $program->code            = $request->code; 
         $program->type_id         = $request->type_id; 
@@ -87,13 +88,19 @@ class ProgramController extends Controller
     {
         try {
             $checkedIDs = $request->input('checkedIDs');
-    
+            $recommend_by_id = $request->input('userId');
+
+            $recommendDate = new \DateTime('now', new \DateTimeZone('UTC'));
+            $recommendDate->setTimezone(new \DateTimeZone('Asia/Kuala_Lumpur'));
+
             $programsToUpdate = Program::whereIn('id', $checkedIDs)->get();
-    
-            $programsToUpdate->each(function ($program) {
+
+            $programsToUpdate->each(function ($program) use ($recommend_by_id, $recommendDate) {
                 $program->update([
-                    'status_id' => Program::STATUS_RECOMMENDED,
-                    'reject_reason' => '-'
+                    'recommend_by_id' => $recommend_by_id,
+                    'recommend_date'  => $recommendDate,
+                    'status_id'       => Program::STATUS_RECOMMENDED,
+                    'reject_reason'   => '-',
                 ]);
             });
 
@@ -110,6 +117,10 @@ class ProgramController extends Controller
     {
         try {
             $programId = $request->input('programId');
+            $recommend_by_id = $request->input('userId');
+
+            $recommendDate = new \DateTime('now', new \DateTimeZone('UTC'));
+            $recommendDate->setTimezone(new \DateTimeZone('Asia/Kuala_Lumpur'));
 
             $program = Program::find($programId);
 
@@ -118,8 +129,9 @@ class ProgramController extends Controller
             }
 
             $program->update([
+                'recommend_by_id' => $recommend_by_id,
+                'recommend_date'  => $recommendDate,
                 'status_id' => Program::STATUS_RECOMMENDED,
-                'reject_reason' => '-'
             ]);
 
             $user = $request->user();
@@ -135,7 +147,10 @@ class ProgramController extends Controller
     {
         try {
             $programId = $request->input('programId');
+            $approved_by_id = $request->input('userId');
 
+            $approvedDate = new \DateTime('now', new \DateTimeZone('UTC'));
+            $approvedDate->setTimezone(new \DateTimeZone('Asia/Kuala_Lumpur'));
             $program = Program::find($programId);
 
             if (!$program) {
@@ -143,8 +158,9 @@ class ProgramController extends Controller
             }
 
             $program->update([
+                'approved_by_id' => $approved_by_id,
+                'approved_date'  => $approvedDate,
                 'status_id' => Program::STATUS_APPROVE,
-                'reject_reason' => '-'
             ]);
 
             $user = $request->user();
@@ -152,7 +168,7 @@ class ProgramController extends Controller
 
             return response()->json(['message' => 'Program successfully endorsed'], 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Error endorsing program'], 500);
+            return response()->json(['error' => 'Error Approved program'], 500);
         }
     }
 
@@ -160,11 +176,18 @@ class ProgramController extends Controller
     {
         try {
             $checkedIDs = $request->input('checkedIDs');
+
+            $approved_by_id = $request->input('userId');
+
+            $approvedDate = new \DateTime('now', new \DateTimeZone('UTC'));
+            $approvedDate->setTimezone(new \DateTimeZone('Asia/Kuala_Lumpur'));
     
             $programsToUpdate = Program::whereIn('id', $checkedIDs)->get();
-    
-            $programsToUpdate->each(function ($program) {
+
+            $programsToUpdate->each(function ($program) use ($approved_by_id,$approvedDate) {
                 $program->update([
+                    'approved_by_id' => $approved_by_id,
+                    'approved_date'  => $approvedDate,
                     'status_id' => Program::STATUS_APPROVE,
                     'reject_reason' => '-'
                 ]);
@@ -255,11 +278,10 @@ class ProgramController extends Controller
 
     public function show($id)
     {
-        $program = Program::with('type', 'bankPanel', 'bankPanel.bank', 'frequency')->find($id);
+        $program = Program::with('type', 'bankPanel', 'bankPanel.bank', 'frequency', 'status', 'created_by', 'recommend_by', 'approved_by')->find($id);
     
         if (!$program) {
-
-        return response()->json(['message' => 'Program not found'], 404);
+            return response()->json(['message' => 'Program not found'], 404);
         }
 
         $installmentPrograms = InstallmentProgram::where('program_id', $id)->get();
