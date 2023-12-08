@@ -90,19 +90,30 @@ class RoleController extends Controller
 
     public function getSelectedPermissionRole($id)
     {
-        // $roleId = $request->selectedRole;
         $selectedRole = Role::with('permissions')->find($id);
 
         if ($selectedRole) {
-            // return response()->json([
-            //     'data' => $selectedRole,
-            //     'code' => 200,
-            // ]);
             return response()->json($selectedRole);
         } else {
             return response()->json(['error' => 'Role not found'], 404);
         }
     }
-}
 
-// $permissions = Spatie\Permission\Models\Permission::join('permission_groups', 'permissions.group_name_id', '=', 'permission_groups.id')->select('permissions.*', 'permission_groups.*')->get();
+    public function updateRole($id, Request $request)
+    {
+        $role = Role::where('id', $id)->first();
+        $role->name = $request->name; 
+        $role->description = $request->description; 
+        $role->save();
+
+        if($request->has('permissions')){
+            $role->syncPermissions($request->input('permissions.*.name'));
+        }
+        $role->permissions()->attach($request->input('permissions'));
+
+        return response()->json([
+            'message'   => "Role updated successfully",
+            'code'      => 200
+        ]);
+    }
+}

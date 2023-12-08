@@ -47,6 +47,41 @@ class AuthController extends Controller
         ]);
     }
 
+    public function getUserRolePermission($id)
+    {
+        $selectedUser = User::with('role', 'role.permissions', 'permissions')->find($id);
+
+        if ($selectedUser) {
+            return response()->json($selectedUser);
+        } else {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+    }
+
+    public function updateUserRolePermission($id, Request $request)
+    {
+        $user = User::where('id', $id)->first();
+        $user->name            = $request->name; 
+        $user->email           = $request->email; 
+        $user->role_id         = $request->role; 
+        $user->isCustomAccess  = $request->isCustomAccess; 
+        $user->save();
+
+        if($request->has('role')){
+            $user->syncRoles($request->input('role.*.name'));
+        }
+        $user->roles()->attach($request->input('role'));
+
+        if($request->has('permissions')){
+            $user->syncPermissions($request->input('permissions.*.name'));
+        }
+        $user->permissions()->attach($request->input('permissions'));
+
+        return response()->json([
+            'message' => 'User updated Successfully'
+        ]);
+    }
+
     public function login(Request $request)
     {
         $request->validate([
