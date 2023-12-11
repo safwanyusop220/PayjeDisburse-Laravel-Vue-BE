@@ -7,6 +7,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Laravel\Sanctum\HasApiTokens;
 
 class AuthController extends Controller
@@ -14,37 +15,54 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $request->validate([
-            'name'                  => ['required'],
-            'email'                 => ['required', 'email', 'unique:users'],
-            'password'              => ['required',],
-        ]);
+        try {
+            $rules = $this->getRules();
+            $messages = $this->getMessages();
 
-        $user = new User();
-        $user->name            = $request->name; 
-        $user->email           = $request->email; 
-        $user->isCustomAccess  = $request->isCustomAccess; 
-        $user->password        = Hash::make($request->password); 
-        $user->role_id         = $request->role; 
+            $validator = Validator::make($request->all(), $rules, $messages);
 
-        $user->save();
+            if ($validator->fails()) {
+                return response()->json([
+                    'error' => 'Validation Error',
+                    'messages' => $validator->errors(),
+                    'code' => 400,
+                ]);
+            }
 
-        if($request->has('role')){
-            $user->syncRoles($request->input('role.*.name'));
+            $user = new User();
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->isCustomAccess = $request->isCustomAccess;
+            $user->password = Hash::make($request->password);
+            $user->role_id = $request->role;
+
+            $user->save();
+
+            if ($request->has('role')) {
+                $user->syncRoles($request->input('role.*.name'));
+            }
+            $user->roles()->attach($request->input('role'));
+
+            if ($request->has('permissions')) {
+                $user->syncPermissions($request->input('permissions.*.name'));
+            }
+            $user->permissions()->attach($request->input('permissions'));
+
+            $user = $request->user();
+            $user->log(User::ACTIVITY_CREATED, "App\Models\User");
+
+            return response()->json([
+                'message' => 'User registered Successfully',
+                'data' => $user,
+                'code' => 200,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred while registering the user',
+                'code' => 500,
+            ], 500);
         }
-        $user->roles()->attach($request->input('role'));
-
-        if($request->has('permissions')){
-            $user->syncPermissions($request->input('permissions.*.name'));
-        }
-        $user->permissions()->attach($request->input('permissions'));
-
-        $user = $request->user();
-        $user->log(User::ACTIVITY_CREATED, "App\Models\User");
-
-        return response()->json([
-            'message' => 'User registered Successfully'
-        ]);
     }
 
     public function getUserRolePermission($id)
@@ -139,8 +157,8 @@ class AuthController extends Controller
         $user = User::find($id);
         if($user) {
             $user->delete();
-            $user = $request->user();
 
+            $user = $request->user();
             $user->log(User::ACTIVITY_DELETED, "App\Models\User");
             return response()->json([
                 'message' => 'User Deleted Successfully',
@@ -163,5 +181,30 @@ class AuthController extends Controller
         } else {
             return response()->json(['error' => 'User not authenticated']);
         }
+    }
+
+    public function getRules()
+    {
+        return [
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8',
+            'role' => 'required|exists:roles,id',
+            'permissions.required' => 'At least one permission is required.'
+        ];
+    }
+
+    public function getMessages()
+    {
+        return [
+            'name.required' => 'The name field is required.',
+            'email.required' => 'The email field is required.',
+            'email.email' => 'Invalid email address.',
+            'email.unique' => 'The email address is already in use.',
+            'password.required' => 'The password field is required.',
+            'password.min' => 'The password must be at least :min characters.',
+            'role.required' => 'The role field is required.',
+            'permissions' => 'required'
+        ];
     }
 }

@@ -28,11 +28,11 @@ Route::prefix('authentications')->group(function () {
     Route::post('/login', [App\Http\Controllers\AuthController::class, 'login']);
     Route::get('/user', [App\Http\Controllers\AuthController::class, 'user'])->middleware('auth:sanctum');
     Route::get('/selectedUser/{id}', [App\Http\Controllers\AuthController::class, 'getUserRolePermission']);
-    Route::delete('/destroy/{id}', [App\Http\Controllers\AuthController::class, 'destroy']);
+    Route::delete('/destroy/{id}', [App\Http\Controllers\AuthController::class, 'destroy'])->middleware('auth:sanctum');
     Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->middleware('auth:sanctum');
     Route::get('/getCurrentUser/{id}', [App\Http\Controllers\AuthController::class, 'getCurrentUser'])->middleware('auth:sanctum');
     Route::post('/update/{id}', [App\Http\Controllers\AuthController::class, 'updateUser'])->middleware('auth:sanctum');
-    Route::put('/updateUserRolePermission/{id}', [App\Http\Controllers\AuthController::class, 'updateUserRolePermission']);
+    Route::put('/updateUserRolePermission/{id}', [App\Http\Controllers\AuthController::class, 'updateUserRolePermission'])->middleware('auth:sanctum');
 
 
 });

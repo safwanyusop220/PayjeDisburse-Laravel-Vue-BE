@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\BankPanel;
 use App\Models\InstallmentProgram;
 use App\Models\Program;
+use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class ProgramController extends Controller
 {
@@ -23,54 +25,67 @@ class ProgramController extends Controller
 
     public function store(Request $request)
     {
-        $user = Auth::user();
+        try {
 
-        $program = new Program();
-        $program->created_by_id   = $request->created_by_id;
-        $program->name            = $request->name; 
-        $program->code            = $request->code; 
-        $program->type_id         = $request->type_id; 
-        $program->disburse_amount = $request->disburse_amount; 
-        $program->status_id       = 1; 
-        $program->period          = $request->period; 
-        $program->bank_panel      = $request->bank_panel;
-        $program->frequency_id    = $request->frequency_id;
-        $program->payment_date    = $request->payment_date; 
-        $program->total_month     = $request->total_month;
-        $program->total_year      = $request->total_year; 
-        $program->save();
+            $rules = $this->getRules($request);
+            $messages = $this->getMessages();
 
-        $programId = $program->id;
+            $validator = Validator::make($request->all(), $rules, $messages);
 
-        if($program->type_id == 3)
-        {
-            foreach ($request->dynamicInputValue as $dynamicInput) {
-                $dynamicValue = new InstallmentProgram();
-                $dynamicValue->program_id = $programId;
-                $dynamicValue->name = '';
-                $dynamicValue->payment_date = $dynamicInput['payment_date'];
-                $dynamicValue->amount = $dynamicInput['value'];
-                $dynamicValue->save();
+            if ($validator->fails()) {
+                return response()->json([
+                    'error' => 'Validation Error',
+                    'messages' => $validator->errors(),
+                    'code' => 400,
+                ]);
             }
-        }elseif($program->type_id == 4)
-        {
-            foreach ($request->dynamicInputValue as $dynamicInput) {
-                $dynamicValue = new InstallmentProgram();
-                $dynamicValue->program_id = $programId;
-                $dynamicValue->name = $dynamicInput['name'];
-                $dynamicValue->payment_date = $dynamicInput['payment_date'];
-                $dynamicValue->save();
+
+            $program = new Program();
+            $program->created_by_id = $request->created_by_id;
+            $program->name = $request->name;
+            $program->code = $request->code;
+            $program->type_id = $request->type_id;
+            $program->status_id = 1;
+            $program->bank_panel = $request->bank_panel;
+
+            if ($request->type_id == 2 || $request->type_id == 3 || $request->type_id == 4) {
+                $program->disburse_amount = $request->disburse_amount;
             }
+
+            if ($request->type_id == 2) {
+                $program->frequency_id = $request->frequency_id;
+                $program->payment_date = $request->payment_date;
+                $program->total_month = $request->total_month;
+            }
+            $program->save();
+
+            $programId = $program->id;
+
+            if ($program->type_id == 3 || $program->type_id == 4) {
+                foreach ($request->dynamicInputValue as $dynamicInput) {
+                    $dynamicValue = new InstallmentProgram();
+                    $dynamicValue->program_id = $programId;
+                    $dynamicValue->name = $program->type_id == 3 ? '' : $dynamicInput['name'];
+                    $dynamicValue->payment_date = $dynamicInput['payment_date'];
+                    $dynamicValue->amount = $program->type_id == 3 ? $dynamicInput['value'] : null;
+                    $dynamicValue->save();
+                }
+            }
+            $user = $request->user();
+            $user->log(Program::ACTIVITY_CREATED, "App\Models\Program");
+    
+            return response()->json([
+                'message' => 'Program Created Successfully',
+                'Program ID' => $programId,
+                'code'    => 200
+            ]);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred while creating the program',
+                'code' => 500,
+            ], 500);
         }
-
-        $user = $request->user();
-        $user->log(Program::ACTIVITY_CREATED, "App\Models\Program");
-
-        return response()->json([
-            'message' => 'Program Created Successfully',
-            'Program ID' => $programId,
-            'code'    => 200
-        ]);
     }
 
     public function recommendation()
@@ -290,5 +305,52 @@ class ProgramController extends Controller
             'program' => $program,
             'installmentPrograms' => $installmentPrograms,
         ]);
+    }
+
+    public function getRules($request)
+    {
+        $rules = [
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|max:50|unique:programs,code',
+            'type_id' => 'required',
+            'bank_panel' => 'required',
+            'created_by_id' => 'exists:users,id',
+        ];
+
+        if ($request->type_id == 2) {
+            $rules = array_merge($rules, [
+                'disburse_amount' => 'required|numeric',
+                'frequency_id' => 'required|exists:frequencies,id',
+                'payment_date' => 'required|date',
+            ]);
+        }
+
+        if ($request->type_id == 3) {
+            $rules = array_merge($rules, [
+                'disburse_amount' => 'required|numeric',
+            ]);
+        }
+
+        if ($request->type_id == 4) {
+            $rules = array_merge($rules, [
+                'disburse_amount' => 'required|numeric',
+            ]);
+        }
+
+        return $rules;
+    }
+
+    public function getMessages()
+    {
+        return [
+            'created_by_id.exists' => 'The specified user does not exist.',
+            'name.required' => 'Please insert program name.',
+            'disburse_amount.required' => 'Please insert disburse amount.',
+            'payment_date.required' => 'Please insert payment date.',
+            'code.unique' => 'The program code must be unique.',
+            'type_id.in' => 'Invalid program type.',
+            'total_month.required_if' => 'The total month field is required for the selected program type.',
+            'total_year.required_if' => 'The total year field is required for the selected program type.',
+        ];
     }
 }
