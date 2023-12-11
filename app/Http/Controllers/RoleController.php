@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PermissionGroup;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -33,21 +34,41 @@ class RoleController extends Controller
 
     public function storeRole(Request $request)
     {
-        $role = new Role();
-        $role->name  = $request->name; 
-        $role->description  = $request->description; 
-        $role->save();
+        try {
+            $rules = $this->getRules();
+            $messages = $this->getMessages();
 
-        if($request->has('permissions')){
-            $role->syncPermissions($request->input('permissions.*.name'));
+            $validator = Validator::make($request->all(), $rules, $messages);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'error' => 'Validation Error',
+                    'messages' => $validator->errors(),
+                    'code' => 400,
+                ]);
+            }
+
+            $role = new Role();
+            $role->name  = $request->name; 
+            $role->description  = $request->description; 
+            $role->save();
+
+            if($request->has('permissions')){
+                $role->syncPermissions($request->input('permissions.*.name'));
+            }
+            $role->permissions()->attach($request->input('permissions'));
+
+            return response()->json([
+                'message' => 'Role Created Successfully',
+                'data' => $role,
+                'code' => 200,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred while creating the bank panel',
+                'code' => 500,
+            ], 500);
         }
-        $role->permissions()->attach($request->input('permissions'));
-
-        return response()->json([
-            'message' => 'Role Created Successfully',
-            'data' => $role,
-            'code' => 200,
-        ]);
     }
 
     public function getPermissionGroups()
@@ -101,19 +122,66 @@ class RoleController extends Controller
 
     public function updateRole($id, Request $request)
     {
-        $role = Role::where('id', $id)->first();
-        $role->name = $request->name; 
-        $role->description = $request->description; 
-        $role->save();
+        try {
+            $rules = $this->getRules();
+            $messages = $this->getMessages();
 
-        if($request->has('permissions')){
-            $role->syncPermissions($request->input('permissions.*.name'));
+            $validator = Validator::make($request->all(), $rules, $messages);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'error' => 'Validation Error',
+                    'messages' => $validator->errors(),
+                    'code' => 400,
+                ]);
+            }
+
+            $role = Role::where('id', $id)->first();
+
+            if (!$role) {
+                return response()->json([
+                    'error' => 'Role not found',
+                    'code' => 404,
+                ], 404);
+            }
+
+            $role->name = $request->name;
+            $role->description = $request->description;
+            $role->save();
+
+            if ($request->has('permissions')) {
+                $role->syncPermissions($request->input('permissions.*.name'));
+            }
+            $role->permissions()->sync($request->input('permissions'));
+
+            return response()->json([
+                'message' => 'Role updated successfully',
+                'code' => 200
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred while updating the role',
+                'code' => 500,
+            ], 500);
         }
-        $role->permissions()->attach($request->input('permissions'));
+    }
 
-        return response()->json([
-            'message'   => "Role updated successfully",
-            'code'      => 200
-        ]);
+    public function getMessages()
+    {
+        return [
+            'name.required' => 'Role name is required',
+            'description.required' => 'Role description is required.',
+            'permissions.required' => 'At least one permission is required.'
+        ];
+    }
+
+    public function getRules()
+    {
+        return [
+            'name' => 'required',
+            'description' => 'required',
+            'permissions' => ['required']
+        ];
     }
 }

@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Program extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     const STATUS_RECOMMENDED = 2;
     const STATUS_APPROVE = 3;
     const STATUS_REJECT = 4;

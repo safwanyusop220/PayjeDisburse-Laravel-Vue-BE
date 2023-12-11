@@ -13,16 +13,23 @@ return new class extends Migration
     {
         Schema::table('roles', function (Blueprint $table) {
             $table->string('description')->nullable();
+            $table->softDeletes();
         });
     }
 
     /**
      * Reverse the migrations.
      */
+    // public function down(): void
+    // {
+    //     Schema::table('permissions_tables', function (Blueprint $table) {
+    //         $table->dropSoftDeletes();
+    //     });
+    // }
     public function down(): void
     {
-        Schema::table('permissions_tables', function (Blueprint $table) {
-            //
+        Schema::table('roles', function (Blueprint $table) {
+            $table->dropSoftDeletes();
         });
     }
 };

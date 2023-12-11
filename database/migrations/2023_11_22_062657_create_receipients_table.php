@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('account_number')->nullable();
             $table->string('reject_reason')->default('-');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

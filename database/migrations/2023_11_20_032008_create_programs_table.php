@@ -14,19 +14,17 @@ return new class extends Migration
         Schema::create('programs', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->softDeletes();
             $table->string('code')->nullable();
             $table->string('name')->nullable();
             $table->unsignedBigInteger('created_by_id')->nullable();
             $table->foreign('created_by_id')->references('id')->on('users')->nullable();
-            
             $table->unsignedBigInteger('recommend_by_id')->nullable();
             $table->foreign('recommend_by_id')->references('id')->on('users')->default(0)->nullable();
             $table->dateTime('recommend_date')->nullable();
-
             $table->unsignedBigInteger('approved_by_id')->nullable();
             $table->foreign('approved_by_id')->references('id')->on('users')->default(0)->nullable();
             $table->dateTime('approved_date')->nullable();
-
             $table->unsignedBigInteger('type_id')->nullable();
             $table->foreign('type_id')->references('id')->on('program_types')->nullable();
             $table->unsignedBigInteger('disburse_amount')->nullable();
@@ -41,7 +39,6 @@ return new class extends Migration
             $table->integer('total_month')->nullable();
             $table->integer('total_year')->nullable();
             $table->string('end_date')->nullable();
-            $table->softDeletes();
         });
     }
 
