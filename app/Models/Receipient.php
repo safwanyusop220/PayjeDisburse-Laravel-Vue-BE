@@ -21,7 +21,7 @@ class Receipient extends Model
     const ACTIVITY_REJECTED = 6;
 
     protected $fillable = [
-        'status_id'
+        'status_id', 'reason_to_reject'
     ];
 
     public function bank()
@@ -42,5 +42,10 @@ class Receipient extends Model
     public function frequency()
     {
         return $this->belongsTo(Frequency::class, 'frequency_id');
+    }
+
+    public function individualRecipient()
+    {
+        return $this->hasOne(IndividualRecipient::class, 'recipient_id');
     }
 }
