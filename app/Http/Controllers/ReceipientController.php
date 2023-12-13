@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\individualRecipient;
+use App\Models\individualSchedularRecipient;
 use App\Models\InstallmentProgram;
 use App\Models\Program;
 use App\Models\Receipient;
@@ -70,7 +72,30 @@ class ReceipientController extends Controller
             $receipientToUpdate->each(function ($receipient) {
                 $receipient->update([
                     'status_id' => Receipient::STATUS_RECOMMENDED,
-                    'reject_reason' => '-'
+                    'reason_to_reject' => '-'
+                ]);
+            });
+    
+            $user = $request->user();
+            $user->log(Receipient::ACTIVITY_RECOMMENDED, "App\Models\Receipient");
+
+            return response()->json(['message' => 'Receipient successfully endorsed'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error endorsing receipient'], 500);
+        }
+    }
+
+    public function bulkRejectRecommendation(Request $request)
+    {
+        try {
+            $checkedIDs = $request->input('checkedIDs');
+
+            $receipientToUpdate = Receipient::whereIn('id', $checkedIDs)->get();
+            $reason_to_reject =  $request->text;
+            $receipientToUpdate->each(function ($receipient) use ($reason_to_reject) {
+                $receipient->update([
+                    'status_id' => Receipient::STATUS_REJECT,
+                    'reason_to_reject' => $reason_to_reject
                 ]);
             });
     
@@ -96,7 +121,31 @@ class ReceipientController extends Controller
 
             $receipient->update([
                 'status_id' => Receipient::STATUS_RECOMMENDED,
-                'reject_reason' => '-'
+                'reason_to_reject' => '-'
+            ]);
+
+            $user = $request->user();
+            $user->log(Receipient::ACTIVITY_RECOMMENDED, "App\Models\Receipient");
+
+            return response()->json(['message' => 'Receipient successfully endorsed'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error endorsing Receipient'], 500);
+        }
+    }
+
+    public function singleRejectSubmitted(Request $request)
+    {
+        try {
+            $receipientId = $request->input('receipientId');
+            $receipient = Receipient::find($receipientId);
+
+            if (!$receipient) {
+                return response()->json(['error' => 'Receipient not found'], 404);
+            }
+
+            $receipient->update([
+                'status_id' => Receipient::STATUS_REJECT,
+                'reason_to_reject' =>  $request->text
             ]);
 
             $user = $request->user();
@@ -121,7 +170,32 @@ class ReceipientController extends Controller
 
             $receipient->update([
                 'status_id' => Receipient::STATUS_APPROVE,
-                'reject_reason' => '-'
+                'reason_to_reject' => '-'
+            ]);
+
+            $user = $request->user();
+            $user->log(Receipient::ACTIVITY_APPROVED, "App\Models\Receipient");
+
+            return response()->json(['message' => 'Receipient successfully approve'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error approve Receipient'], 500);
+        }
+    }
+
+    public function singleRejectApproval(Request $request)
+    {
+        try {
+            $receipientId = $request->input('receipientId');
+
+            $receipient = Receipient::find($receipientId);
+
+            if (!$receipient) {
+                return response()->json(['error' => 'Receipient not found'], 404);
+            }
+
+            $receipient->update([
+                'status_id' => Receipient::STATUS_REJECT,
+                'reason_to_reject' => $request->text
             ]);
 
             $user = $request->user();
@@ -154,7 +228,7 @@ class ReceipientController extends Controller
             $receipientToUpdate->each(function ($receipient) {
                 $receipient->update([
                     'status_id' => Receipient::STATUS_APPROVE,
-                    'reject_reason' => '-'
+                    'reason_to_reject' => '-'
                 ]);
             });
     
@@ -162,6 +236,29 @@ class ReceipientController extends Controller
             $user->log(Receipient::ACTIVITY_APPROVED, "App\Models\Receipient");
             
             return response()->json(['message' => 'Receipient successfully approved'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error endorsing receipient'], 500);
+        }
+    }
+
+    public function bulkRejectApproval(Request $request)
+    {
+        try {
+            $checkedIDs = $request->input('checkedIDs');
+
+            $receipientToUpdate = Receipient::whereIn('id', $checkedIDs)->get();
+            $reason_to_reject =  $request->text;
+            $receipientToUpdate->each(function ($receipient) use ($reason_to_reject) {
+                $receipient->update([
+                    'status_id' => Receipient::STATUS_REJECT,
+                    'reason_to_reject' => $reason_to_reject
+                ]);
+            });
+    
+            $user = $request->user();
+            $user->log(Receipient::ACTIVITY_RECOMMENDED, "App\Models\Receipient");
+
+            return response()->json(['message' => 'Receipient successfully endorsed'], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error endorsing receipient'], 500);
         }
@@ -181,11 +278,46 @@ class ReceipientController extends Controller
         $receipient->program_id = $request->program_id;
         $receipient->status_id = 1;
         $receipient->save();
+        $receipientID = $receipient->id;
+
+        if ($request->program_type_id == 1) {
+            $individualRecipient = new IndividualRecipient();
+            $individualRecipient->recipient_id = $receipientID;
+            $individualRecipient->program_id = $request->program_id;
+            $individualRecipient->disburse_amount = $request->disburse_amount;
+            $individualRecipient->frequency_id = $request->frequency_id;
+            $individualRecipient->payment_date = $request->payment_date;
+    
+            if ($request->frequency_id == 2) {
+                $individualRecipient->total_month = $request->total_month;
+            } elseif ($request->frequency_id == 3) {
+                $individualRecipient->total_year = $request->total_year;
+            } elseif ($request->frequency_id == 4) {
+                $individualRecipient->save();
+    
+                $programId = $individualRecipient->program_id;
+                foreach ($request->dynamicInputValue as $dynamicInput) {
+                    $dynamicValue = new IndividualSchedularRecipient();
+                    $dynamicValue->recipient_id = $receipientID;
+                    $dynamicValue->program_id = $programId;
+                    $dynamicValue->payment_date = $dynamicInput['payment_date'];
+                    $dynamicValue->save();
+                }
+    
+                return response()->json([
+                    'message' => 'Recipient Created Successfully',
+                    'code'    => 200
+                ]);
+            }
+    
+            $individualRecipient->save();
+        }
 
         $user = $request->user();
         $user->log(Receipient::ACTIVITY_CREATED, "App\Models\Receipient");
 
         return response()->json([
+            'recipient' =>  $receipient,
             'message' => 'Receipient Created Successfully',
             'code'    => 200
         ]);
@@ -230,7 +362,7 @@ class ReceipientController extends Controller
 
     public function show($id)
     {
-        $receipient = Receipient::with('program', 'program.type', 'program.frequency', 'program.installmentPrograms')->find($id);
+        $receipient = Receipient::with('program', 'program.type', 'program.frequency', 'program.installmentPrograms', 'individualRecipient', 'individualRecipient.frequency', 'individualRecipient.recipient', 'individualRecipient.schedular')->find($id);
     
         if (!$receipient) {
 

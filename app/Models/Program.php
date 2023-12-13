@@ -22,7 +22,8 @@ class Program extends Model
 
 
     protected $fillable = [
-        'status_id',  'recommend_by_id', 'recommend_date', 'approved_by_id', 'approved_date'
+        'status_id',  'recommend_by_id', 'recommend_date', 'approved_by_id', 'approved_date', 'reason_to_reject',
+        'rejected_by_id', 'rejected_date'
     ];
 
     public function created_by()

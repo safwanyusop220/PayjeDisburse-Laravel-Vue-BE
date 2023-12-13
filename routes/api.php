@@ -52,10 +52,14 @@ Route::prefix('programs')->middleware('auth:sanctum')->group(function () {
     Route::delete('/destroy/{id}', [App\Http\Controllers\ProgramController::class, 'destroy']);
     Route::get('/edit/{id}', [App\Http\Controllers\ProgramController::class, 'edit']);
     Route::post('/update/{id}', [App\Http\Controllers\ProgramController::class, 'update']);
-    Route::put('/endorseRecommendation', [App\Http\Controllers\ProgramController::class, 'endorseRecommendation']);
+    Route::put('/bulkApproveRecommendation', [App\Http\Controllers\ProgramController::class, 'bulkApproveRecommendation']);
+    Route::put('/bulkRejectRecommendation', [App\Http\Controllers\ProgramController::class, 'bulkRejectRecommendation']);
     Route::put('/singleRecommendation', [App\Http\Controllers\ProgramController::class, 'singleRecommendation']);
+    Route::put('/singleRejectSubmit', [App\Http\Controllers\ProgramController::class, 'singleRejectSubmit']);
     Route::put('/singleApprove', [App\Http\Controllers\ProgramController::class, 'singleApprove']);
-    Route::put('/approve', [App\Http\Controllers\ProgramController::class, 'approve']);
+    Route::put('/singleReject', [App\Http\Controllers\ProgramController::class, 'singleReject']);
+    Route::put('/bulkApprove', [App\Http\Controllers\ProgramController::class, 'bulkApprove']);
+    Route::put('/bulkReject', [App\Http\Controllers\ProgramController::class, 'bulkReject']);
     Route::get('/bank-panel', [App\Http\Controllers\ProgramController::class, 'bankPanels']);
     Route::get('/show/{id}', [App\Http\Controllers\ProgramController::class, 'show']);
 });
@@ -68,12 +72,16 @@ Route::prefix('receipients')->middleware('auth:sanctum')->group(function () {
     Route::get('/programs', [App\Http\Controllers\ReceipientController::class, 'programs']);
     Route::get('/banks', [App\Http\Controllers\ReceipientController::class, 'banks']);
     Route::put('/endorse', [App\Http\Controllers\ReceipientController::class, 'endorse']);
+    Route::put('/bulkRejectRecommendation', [App\Http\Controllers\ReceipientController::class, 'bulkRejectRecommendation']);
     Route::put('/approve', [App\Http\Controllers\ReceipientController::class, 'approve']);
+    Route::put('/bulkRejectApproval', [App\Http\Controllers\ReceipientController::class, 'bulkRejectApproval']);
     Route::get('/program/show/{id}', [App\Http\Controllers\ReceipientController::class, 'program']);
     Route::delete('/destroy/{id}', [App\Http\Controllers\ReceipientController::class, 'destroy']);
     Route::get('/show/{id}', [App\Http\Controllers\ReceipientController::class, 'show']);
     Route::put('/singleRecommendation', [App\Http\Controllers\ReceipientController::class, 'singleRecommendation']);
+    Route::put('/singleRejectSubmitted', [App\Http\Controllers\ReceipientController::class, 'singleRejectSubmitted']);
     Route::put('/singleApprove', [App\Http\Controllers\ReceipientController::class, 'singleApprove']);
+    Route::put('/singleRejectApproval', [App\Http\Controllers\ReceipientController::class, 'singleRejectApproval']);
 });
 
 Route::prefix('bank-panel')->middleware('auth:sanctum')->group(function () {

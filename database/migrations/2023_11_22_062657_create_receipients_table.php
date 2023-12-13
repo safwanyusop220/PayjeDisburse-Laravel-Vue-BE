@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('postcode')->nullable();
             $table->string('account_number')->nullable();
-            $table->string('reject_reason')->default('-');
+            $table->string('reason_to_reject')->default('-');
             $table->timestamps();
             $table->softDeletes();
         });

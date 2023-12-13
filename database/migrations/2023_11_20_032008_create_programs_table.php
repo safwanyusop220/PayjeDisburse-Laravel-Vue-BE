@@ -39,6 +39,11 @@ return new class extends Migration
             $table->integer('total_month')->nullable();
             $table->integer('total_year')->nullable();
             $table->string('end_date')->nullable();
+            $table->string('reason_to_reject')->nullable();
+
+            $table->unsignedBigInteger('rejected_by_id')->nullable();
+            $table->foreign('rejected_by_id')->references('id')->on('users')->default(0)->nullable();
+            $table->dateTime('rejected_date')->nullable();
         });
     }
 

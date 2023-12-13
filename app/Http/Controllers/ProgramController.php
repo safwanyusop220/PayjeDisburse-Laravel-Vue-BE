@@ -99,7 +99,7 @@ class ProgramController extends Controller
         ]);
     }
 
-    public function endorseRecommendation(Request $request)
+    public function bulkApproveRecommendation(Request $request)
     {
         try {
             $checkedIDs = $request->input('checkedIDs');
@@ -121,6 +121,37 @@ class ProgramController extends Controller
 
             $user = $request->user();
             $user->log(Program::ACTIVITY_RECOMMENDED, "App\Models\Program");
+
+            return response()->json(['message' => 'Programs successfully endorsed'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error endorsing programs'], 500);
+        }
+    }
+
+    public function bulkRejectRecommendation(Request $request)
+    {
+        try {
+            $checkedIDs = $request->input('checkedIDs');
+            $rejected_by_id = $request->input('userId');
+
+            $rejectedDate = new \DateTime('now', new \DateTimeZone('UTC'));
+            $rejectedDate->setTimezone(new \DateTimeZone('Asia/Kuala_Lumpur'));
+
+            $reason_to_reject =  $request->text;
+
+            $programsToUpdate = Program::whereIn('id', $checkedIDs)->get();
+
+            $programsToUpdate->each(function ($program) use ($rejected_by_id, $rejectedDate, $reason_to_reject) {
+                $program->update([
+                    'rejected_by_id' => $rejected_by_id,
+                    'rejected_date'  => $rejectedDate,
+                    'status_id'       => Program::STATUS_REJECT,
+                    'reason_to_reject'   => $reason_to_reject,
+                ]);
+            });
+
+            $user = $request->user();
+            $user->log(Program::ACTIVITY_REJECTED, "App\Models\Program");
 
             return response()->json(['message' => 'Programs successfully endorsed'], 200);
         } catch (\Exception $e) {
@@ -158,6 +189,30 @@ class ProgramController extends Controller
         }
     }
 
+    public function singleRejectSubmit(Request $request)
+    {
+        try {
+            $programId = $request->input('programId');
+            $program = Program::find($programId);
+
+            if (!$program) {
+                return response()->json(['error' => 'Program not found'], 404);
+            }
+
+            $program->update([
+                'status_id' => Program::STATUS_REJECT,
+                'reason_to_reject' => $request->text
+            ]);
+
+            $user = $request->user();
+            $user->log(Program::ACTIVITY_APPROVED, "App\Models\Program");
+
+            return response()->json(['message' => 'Program successfully endorsed'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error Approved program'], 500);
+        }
+    }
+
     public function singleApprove(Request $request)
     {
         try {
@@ -187,7 +242,31 @@ class ProgramController extends Controller
         }
     }
 
-    public function approve(Request $request)
+    public function singleReject(Request $request)
+    {
+        try {
+            $programId = $request->input('programId');
+            $program = Program::find($programId);
+
+            if (!$program) {
+                return response()->json(['error' => 'Program not found'], 404);
+            }
+
+            $program->update([
+                'status_id' => Program::STATUS_REJECT,
+                'reason_to_reject' => $request->text
+            ]);
+
+            $user = $request->user();
+            $user->log(Program::ACTIVITY_APPROVED, "App\Models\Program");
+
+            return response()->json(['message' => 'Program successfully endorsed'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error Approved program'], 500);
+        }
+    }
+
+    public function bulkApprove(Request $request)
     {
         try {
             $checkedIDs = $request->input('checkedIDs');
@@ -212,6 +291,37 @@ class ProgramController extends Controller
             $user->log(Program::ACTIVITY_APPROVED, "App\Models\Program");
 
             return response()->json(['message' => 'Programs successfully approved'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error endorsing programs'], 500);
+        }
+    }
+
+    public function bulkReject(Request $request)
+    {
+        try {
+            $checkedIDs = $request->input('checkedIDs');
+            $rejected_by_id = $request->input('userId');
+
+            $rejectedDate = new \DateTime('now', new \DateTimeZone('UTC'));
+            $rejectedDate->setTimezone(new \DateTimeZone('Asia/Kuala_Lumpur'));
+
+            $reason_to_reject =  $request->text;
+
+            $programsToUpdate = Program::whereIn('id', $checkedIDs)->get();
+
+            $programsToUpdate->each(function ($program) use ($rejected_by_id, $rejectedDate, $reason_to_reject) {
+                $program->update([
+                    'rejected_by_id' => $rejected_by_id,
+                    'rejected_date'  => $rejectedDate,
+                    'status_id'       => Program::STATUS_REJECT,
+                    'reason_to_reject'   => $reason_to_reject,
+                ]);
+            });
+
+            $user = $request->user();
+            $user->log(Program::ACTIVITY_REJECTED, "App\Models\Program");
+
+            return response()->json(['message' => 'Programs successfully endorsed'], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error endorsing programs'], 500);
         }
