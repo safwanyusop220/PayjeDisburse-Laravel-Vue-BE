@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BankPanel;
+use App\Models\RefBank;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -23,7 +24,7 @@ class BankPanelController extends Controller
     public function store(Request $request)
     {
         try {
-            $rules = $this->getRules();
+            $rules = $this->getRules($request);
             $messages = $this->getMessages();
 
             $validator = Validator::make($request->all(), $rules, $messages);
@@ -92,7 +93,7 @@ class BankPanelController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $rules = $this->getRules();
+            $rules = $this->getRules($request);
             $messages = $this->getMessages();
 
             $validator = Validator::make($request->all(), $rules, $messages);
@@ -143,17 +144,26 @@ class BankPanelController extends Controller
         return [
             'holder_name.required' => 'Please insert the holder name.',
             'bank_id.required' => 'Please insert the bank ID.',
-            'account_number.required' => 'Please insert the account number.',
+            'account_number.required' => 'Account number is required.',
             'account_number.numeric' => 'Account number must be numeric.',
+            'account_number.digits' => 'Account number must be :digits digits.',
         ];
     }
 
-    public function getRules()
+    public function getRules(Request $request)
     {
+        $accountNumberLength = $this->getAccountNumberLength($request->input('bank_id'));
         return [
             'holder_name'    => 'required|string',
             'bank_id'        => 'required|numeric',
-            'account_number' => 'required|numeric',
+            'account_number' => 'required|numeric|digits:' . $accountNumberLength
         ];
+    }
+
+    public function getAccountNumberLength($bankId)
+    {
+        $bank = RefBank::find($bankId);
+
+        return $bank ? $bank->account_number_length : 0;
     }
 }

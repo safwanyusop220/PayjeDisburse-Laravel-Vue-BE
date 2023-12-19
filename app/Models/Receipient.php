@@ -21,8 +21,10 @@ class Receipient extends Model
     const ACTIVITY_REJECTED = 6;
 
     protected $fillable = [
-        'status_id', 'reason_to_reject'
+        'status_id', 'reason_to_reject','name','identification_number','address','postcode','phone_number',
+        'email','bank_id','account_number','program_id','recipient_id','disburse_amount','frequency_id','payment_date','total_month','total_year',
     ];
+
 
     public function bank()
     {
@@ -47,5 +49,10 @@ class Receipient extends Model
     public function individualRecipient()
     {
         return $this->hasOne(IndividualRecipient::class, 'recipient_id');
+    }
+
+    public function schedular()
+    {
+        return $this->hasMany(IndividualSchedularRecipient::class, 'recipient_id');
     }
 }

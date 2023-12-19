@@ -75,7 +75,7 @@
     "name": "Bank of America",
     "bnm_code": "07-Bank of America",
     "logo": "images/banks/bank-of-america.png",
-    "account_number_length": 17
+    "account_number_length": 12
   },
   {
     "id": "12",
@@ -96,35 +96,35 @@
     "name": "CIMB Bank",
     "bnm_code": "35-CIMB Bank Berhad",
     "logo": "images/banks/cimb-bank.png",
-    "account_number_length": 17
+    "account_number_length": 14
   },
   {
     "id": "15",
     "name": "Citibank",
     "bnm_code": "17-Citibank",
     "logo": "images/banks/citibank.png",
-    "account_number_length": 17
+    "account_number_length": 10
   },
   {
     "id": "16",
     "name": "Deutsche Bank",
     "bnm_code": "19-Deutsche Bank (M) Bhd",
     "logo": "images/banks/deutsche-bank.png",
-    "account_number_length": 17
+    "account_number_length": 10
   },
   {
     "id": "17",
     "name": "Hong Leong Bank",
     "bnm_code": "24-Hong Leong Bank Berhad/ Hong Leong Finance",
     "logo": "images/banks/hong-leong-bank.png",
-    "account_number_length": 17
+    "account_number_length": 11
   },
   {
     "id": "18",
     "name": "HSBC Bank",
     "bnm_code": "22-HSBC Bank Berhad",
     "logo": "images/banks/hsbc-bank.png",
-    "account_number_length": 17
+    "account_number_length": 12
   },
   {
     "id": "19",
@@ -187,7 +187,7 @@
     "name": "Standard Chartered Bank",
     "bnm_code": "14-Standard Chartered Bank Berhad",
     "logo": "images/banks/standard-chartered-bank.png",
-    "account_number_length": 17
+    "account_number_length": 12
   },
   {
     "id": "28",
@@ -208,7 +208,7 @@
     "name": "United Overseas Bank",
     "bnm_code": "26-United Overseas Bank (M) Bhd",
     "logo": "images/banks/united-overseas-bank.png",
-    "account_number_length": 16
+    "account_number_length": 11
   },
   {
     "id": "31",

@@ -65,4 +65,9 @@ class Program extends Model
     {
         return $this->hasMany(InstallmentProgram::class, 'program_id');
     }
+
+    public function recipients()
+    {
+        return $this->hasMany(Receipient::class, 'program_id');
+    }
 }

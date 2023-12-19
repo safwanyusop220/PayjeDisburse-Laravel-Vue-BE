@@ -47,6 +47,12 @@ class RefBank extends Model
         'name',
         'bnm_code',
         'logo',
+        'account_number_length',
+        'config'
+    ];
+
+    protected $casts = [
+        'config' => 'array',
     ];
 
     public function receiver()
