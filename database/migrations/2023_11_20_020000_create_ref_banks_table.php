@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->string('bnm_code')->unique();
             $table->string('logo');
-            $table->integer('account_number_length')->nullable();
+            $table->json('account_number_length')->nullable();
             $table->timestamps();
         });
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BankPanel;
 use App\Models\InstallmentProgram;
+use App\Models\Payment;
 use App\Models\Program;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
@@ -56,6 +57,8 @@ class ProgramController extends Controller
                 $program->frequency_id = $request->frequency_id;
                 $program->payment_date = $request->payment_date;
                 $program->total_month = $request->total_month;
+                $program->total_year = $request->total_year;
+                $program->end_date = $request->end_date;
             }
             $program->save();
 
@@ -232,13 +235,18 @@ class ProgramController extends Controller
                 'approved_date'  => $approvedDate,
                 'status_id' => Program::STATUS_APPROVE,
             ]);
+            
+            $payment = new Payment();
+            $payment->program_id = $program->id;
+            $payment->status_id = Payment::STATUS_REQUEST;
+            $payment->save();
 
             $user = $request->user();
             $user->log(Program::ACTIVITY_APPROVED, "App\Models\Program");
 
             return response()->json(['message' => 'Program successfully endorsed'], 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Error Approved program'], 500);
+            return response()->json(['error' => 'Error Approved program', 'details' => $e->getMessage()], 500);
         }
     }
 
@@ -285,6 +293,11 @@ class ProgramController extends Controller
                     'status_id' => Program::STATUS_APPROVE,
                     'reject_reason' => '-'
                 ]);
+
+                $payment = new Payment();
+                $payment->program_id = $program->id;
+                $payment->status_id = Payment::STATUS_REQUEST;
+                $payment->save();
             });
     
             $user = $request->user();

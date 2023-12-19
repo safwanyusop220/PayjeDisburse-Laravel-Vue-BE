@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PermissionGroup;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Permission;
@@ -164,6 +165,25 @@ class RoleController extends Controller
                 'error' => 'An error occurred while updating the role',
                 'code' => 500,
             ], 500);
+        }
+    }
+
+    public function destroy($id, Request $request)
+    {
+        $role = Role::find($id);
+        if($role) {
+            $role->delete();
+
+            $user = $request->user();
+            $user->log(User::ACTIVITY_DELETED, "App\Models\Role");
+            return response()->json([
+                'message' => 'Role Deleted Successfully',
+                'code'    => 200
+            ]);
+        } else {
+            return response()->json([
+                'message' => "Role with id:$id does not exist"
+            ]);
         }
     }
 

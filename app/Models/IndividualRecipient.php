@@ -9,6 +9,10 @@ class IndividualRecipient extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'program_id','recipient_id','disburse_amount','frequency_id','payment_date','total_month','total_year','end_date'
+    ];
+
     public function program()
     {
         return $this->belongsTo(Program::class, 'program_id');

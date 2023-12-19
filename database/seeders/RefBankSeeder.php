@@ -15,6 +15,16 @@ class RefBankSeeder extends Seeder
     {
         $banks = json_decode(file_get_contents(config_path('banks.json')), true);
 
-        RefBank::upsert($banks, ['id'], ['name', 'bnm_code', 'logo']);    
+        foreach ($banks as $bank) {
+            RefBank::updateOrInsert(
+                ['id' => $bank['id']],
+                [
+                    'name' => $bank['name'],
+                    'bnm_code' => $bank['bnm_code'],
+                    'logo' => $bank['logo'],
+                    'account_number_length' => json_encode($bank['account_number_length']),
+                ]
+            );
+        }   
     }
 }

@@ -1,6 +1,11 @@
 <?php
-
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProgramController;
+use App\Http\Controllers\AuditTrailController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ReceipientController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -10,31 +15,29 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::prefix('roles')->middleware('auth:sanctum')->group(function () {
-    Route::get('all/permission', [App\Http\Controllers\RoleController::class, 'AllPermission']);
-    Route::get('add/permission', [App\Http\Controllers\RoleController::class, 'AddPermission']);
-    Route::get('getPermissionGroups', [App\Http\Controllers\RoleController::class, 'getPermissionGroups']);
-    Route::post('/store', [App\Http\Controllers\RoleController::class, 'store']);
-    Route::post('/storeRole', [App\Http\Controllers\RoleController::class, 'storeRole']);
-
-    Route::get('all/roles', [App\Http\Controllers\RoleController::class, 'roles']);
-    Route::get('/rolePermission', [App\Http\Controllers\RoleController::class, 'addRolePermission']);
-
-    Route::get('/selectedRole/{id}', [App\Http\Controllers\RoleController::class, 'getSelectedPermissionRole']);
-    Route::put('/update/{id}', [App\Http\Controllers\RoleController::class, 'updateRole']);
+    Route::get('all/permission', [RoleController::class, 'AllPermission']);
+    Route::get('add/permission', [RoleController::class, 'AddPermission']);
+    Route::get('getPermissionGroups', [RoleController::class, 'getPermissionGroups']);
+    Route::post('/store', [RoleController::class, 'store']);
+    Route::post('/storeRole', [RoleController::class, 'storeRole']);
+    Route::get('all/roles', [RoleController::class, 'roles']);
+    Route::get('/rolePermission', [RoleController::class, 'addRolePermission']);
+    Route::get('/selectedRole/{id}', [RoleController::class, 'getSelectedPermissionRole']);
+    Route::put('/update/{id}', [RoleController::class, 'updateRole']);
+    Route::delete('/destroy/{id}', [RoleController::class, 'destroy'])->middleware('auth:sanctum');
 });
 
 Route::prefix('authentications')->group(function () {
-    Route::post('/register', [App\Http\Controllers\AuthController::class, 'register'])->middleware('auth:sanctum');
-    Route::post('/login', [App\Http\Controllers\AuthController::class, 'login']);
-    Route::get('/user', [App\Http\Controllers\AuthController::class, 'user'])->middleware('auth:sanctum');
-    Route::get('/selectedUser/{id}', [App\Http\Controllers\AuthController::class, 'getUserRolePermission']);
-    Route::delete('/destroy/{id}', [App\Http\Controllers\AuthController::class, 'destroy'])->middleware('auth:sanctum');
-    Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->middleware('auth:sanctum');
-    Route::get('/getCurrentUser/{id}', [App\Http\Controllers\AuthController::class, 'getCurrentUser'])->middleware('auth:sanctum');
-    Route::post('/update/{id}', [App\Http\Controllers\AuthController::class, 'updateUser'])->middleware('auth:sanctum');
-    Route::put('/updateUserRolePermission/{id}', [App\Http\Controllers\AuthController::class, 'updateUserRolePermission'])->middleware('auth:sanctum');
-
-
+    Route::post('/register', [AuthController::class, 'register'])->middleware('auth:sanctum');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/landingPage', [AuthController::class, 'login']);
+    Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum');
+    Route::get('/selectedUser/{id}', [AuthController::class, 'getUserRolePermission']);
+    Route::delete('/destroy/{id}', [AuthController::class, 'destroy'])->middleware('auth:sanctum');
+    Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+    Route::get('/getCurrentUser/{id}', [AuthController::class, 'getCurrentUser'])->middleware('auth:sanctum');
+    Route::post('/update/{id}', [AuthController::class, 'updateUser'])->middleware('auth:sanctum');
+    Route::put('/updateUserRolePermission/{id}', [AuthController::class, 'updateUserRolePermission'])->middleware('auth:sanctum');
 });
 
 // Route::post('authentications/logout', function () {
@@ -45,53 +48,58 @@ Route::prefix('authentications')->group(function () {
 
 
 Route::prefix('programs')->middleware('auth:sanctum')->group(function () {
-    Route::get('/', [App\Http\Controllers\ProgramController::class, 'programs']);
-    Route::post('/store', [App\Http\Controllers\ProgramController::class, 'store']);
-    Route::get('/recommendation', [App\Http\Controllers\ProgramController::class, 'recommendation']);
-    Route::get('/approval', [App\Http\Controllers\ProgramController::class, 'approval']);
-    Route::delete('/destroy/{id}', [App\Http\Controllers\ProgramController::class, 'destroy']);
-    Route::get('/edit/{id}', [App\Http\Controllers\ProgramController::class, 'edit']);
-    Route::post('/update/{id}', [App\Http\Controllers\ProgramController::class, 'update']);
-    Route::put('/bulkApproveRecommendation', [App\Http\Controllers\ProgramController::class, 'bulkApproveRecommendation']);
-    Route::put('/bulkRejectRecommendation', [App\Http\Controllers\ProgramController::class, 'bulkRejectRecommendation']);
-    Route::put('/singleRecommendation', [App\Http\Controllers\ProgramController::class, 'singleRecommendation']);
-    Route::put('/singleRejectSubmit', [App\Http\Controllers\ProgramController::class, 'singleRejectSubmit']);
-    Route::put('/singleApprove', [App\Http\Controllers\ProgramController::class, 'singleApprove']);
-    Route::put('/singleReject', [App\Http\Controllers\ProgramController::class, 'singleReject']);
-    Route::put('/bulkApprove', [App\Http\Controllers\ProgramController::class, 'bulkApprove']);
-    Route::put('/bulkReject', [App\Http\Controllers\ProgramController::class, 'bulkReject']);
-    Route::get('/bank-panel', [App\Http\Controllers\ProgramController::class, 'bankPanels']);
-    Route::get('/show/{id}', [App\Http\Controllers\ProgramController::class, 'show']);
+    Route::get('/', [ProgramController::class, 'programs']);
+    Route::post('/store', [ProgramController::class, 'store']);
+    Route::get('/recommendation', [ProgramController::class, 'recommendation']);
+    Route::get('/approval', [ProgramController::class, 'approval']);
+    Route::delete('/destroy/{id}', [ProgramController::class, 'destroy']);
+    Route::get('/edit/{id}', [ProgramController::class, 'edit']);
+    Route::post('/update/{id}', [ProgramController::class, 'update']);
+    Route::put('/bulkApprove', [ProgramController::class, 'bulkApprove']);
+    Route::put('/bulkReject', [ProgramController::class, 'bulkReject']);
+    Route::put('/bulkApproveRecommendation', [ProgramController::class, 'bulkApproveRecommendation']);
+    Route::put('/bulkRejectRecommendation', [ProgramController::class, 'bulkRejectRecommendation']);
+    Route::put('/singleRecommendation', [ProgramController::class, 'singleRecommendation']);
+    Route::put('/singleRejectSubmit', [ProgramController::class, 'singleRejectSubmit']);
+    Route::put('/singleApprove', [ProgramController::class, 'singleApprove']);
+    Route::put('/singleReject', [ProgramController::class, 'singleReject']);
+    Route::get('/bank-panel', [ProgramController::class, 'bankPanels']);
+    Route::get('/show/{id}', [ProgramController::class, 'show']);
 });
 
 Route::prefix('receipients')->middleware('auth:sanctum')->group(function () {
-    Route::get('/', [App\Http\Controllers\ReceipientController::class, 'index']);
-    Route::post('/store', [App\Http\Controllers\ReceipientController::class, 'store']);
-    Route::get('/recommendation', [App\Http\Controllers\ReceipientController::class, 'recommendation']);
-    Route::get('/approval', [App\Http\Controllers\ReceipientController::class, 'approval']);
-    Route::get('/programs', [App\Http\Controllers\ReceipientController::class, 'programs']);
-    Route::get('/banks', [App\Http\Controllers\ReceipientController::class, 'banks']);
-    Route::put('/endorse', [App\Http\Controllers\ReceipientController::class, 'endorse']);
-    Route::put('/bulkRejectRecommendation', [App\Http\Controllers\ReceipientController::class, 'bulkRejectRecommendation']);
-    Route::put('/approve', [App\Http\Controllers\ReceipientController::class, 'approve']);
-    Route::put('/bulkRejectApproval', [App\Http\Controllers\ReceipientController::class, 'bulkRejectApproval']);
-    Route::get('/program/show/{id}', [App\Http\Controllers\ReceipientController::class, 'program']);
-    Route::delete('/destroy/{id}', [App\Http\Controllers\ReceipientController::class, 'destroy']);
-    Route::get('/show/{id}', [App\Http\Controllers\ReceipientController::class, 'show']);
-    Route::put('/singleRecommendation', [App\Http\Controllers\ReceipientController::class, 'singleRecommendation']);
-    Route::put('/singleRejectSubmitted', [App\Http\Controllers\ReceipientController::class, 'singleRejectSubmitted']);
-    Route::put('/singleApprove', [App\Http\Controllers\ReceipientController::class, 'singleApprove']);
-    Route::put('/singleRejectApproval', [App\Http\Controllers\ReceipientController::class, 'singleRejectApproval']);
+    Route::get('/', [ReceipientController::class, 'index']);
+    Route::post('/store', [ReceipientController::class, 'store']);
+    Route::get('/recommendation', [ReceipientController::class, 'recommendation']);
+    Route::get('/approval', [ReceipientController::class, 'approval']);
+    Route::get('/programs', [ReceipientController::class, 'programs']);
+    Route::get('/banks', [ReceipientController::class, 'banks']);
+    Route::put('/endorse', [ReceipientController::class, 'endorse']);
+    Route::put('/bulkRejectRecommendation', [ReceipientController::class, 'bulkRejectRecommendation']);
+    Route::put('/approve', [ReceipientController::class, 'approve']);
+    Route::put('/bulkRejectApproval', [ReceipientController::class, 'bulkRejectApproval']);
+    Route::get('/program/show/{id}', [ReceipientController::class, 'program']);
+    Route::delete('/destroy/{id}', [ReceipientController::class, 'destroy']);
+    Route::get('/show/{id}', [ReceipientController::class, 'show']);
+    Route::put('/singleRecommendation', [ReceipientController::class, 'singleRecommendation']);
+    Route::put('/singleRejectSubmitted', [ReceipientController::class, 'singleRejectSubmitted']);
+    Route::put('/singleApprove', [ReceipientController::class, 'singleApprove']);
+    Route::put('/singleRejectApproval', [ReceipientController::class, 'singleRejectApproval']);
+});
+
+Route::prefix('payment')->middleware('auth:sanctum')->group(function () {
+    Route::get('/', [PaymentController::class, 'payment']);
+    Route::get('/recipient-list/{id}', [PaymentController::class, 'recipientList']);
 });
 
 Route::prefix('bank-panel')->middleware('auth:sanctum')->group(function () {
-    Route::get('/', [App\Http\Controllers\BankPanelController::class, 'index']);
-    Route::post('/store', [App\Http\Controllers\BankPanelController::class, 'store']);
-    Route::delete('/destroy/{id}', [App\Http\Controllers\BankPanelController::class, 'destroy']);
-    Route::get('/edit/{id}', [App\Http\Controllers\BankPanelController::class, 'edit']);
-    Route::post('/update/{id}', [App\Http\Controllers\BankPanelController::class, 'update']);
+    Route::get('/', [BankPanelController::class, 'index']);
+    Route::post('/store', [BankPanelController::class, 'store']);
+    Route::delete('/destroy/{id}', [BankPanelController::class, 'destroy']);
+    Route::get('/edit/{id}', [BankPanelController::class, 'edit']);
+    Route::post('/update/{id}', [BankPanelController::class, 'update']);
 });
 
 Route::prefix('audit-trail')->middleware('auth:sanctum')->group(function () {
-    Route::get('/', [App\Http\Controllers\AuditTrailController::class, 'index']);
+    Route::get('/', [AuditTrailController::class, 'index']);
 });
