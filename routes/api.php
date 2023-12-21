@@ -3,6 +3,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\AuditTrailController;
+use App\Http\Controllers\BankPanelController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReceipientController;
 
