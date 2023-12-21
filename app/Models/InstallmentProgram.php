@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class InstallmentProgram extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'amount', 'name', 'payment_date', 'value'
+    ];
 
     public function program()
     {
