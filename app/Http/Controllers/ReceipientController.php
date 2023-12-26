@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\individualRecipient;
-use App\Models\individualSchedularRecipient;
+use App\Models\IndividualRecipient;
+use App\Models\IndividualSchedularRecipient;
 use App\Models\InstallmentProgram;
 use App\Models\Payment;
 use App\Models\Program;
