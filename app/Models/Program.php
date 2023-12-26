@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Program extends Model
 {
     use HasFactory, SoftDeletes;
+    const STATUS_SUBMITTED = 1;
     const STATUS_RECOMMENDED = 2;
     const STATUS_APPROVE = 3;
     const STATUS_REJECT = 4;

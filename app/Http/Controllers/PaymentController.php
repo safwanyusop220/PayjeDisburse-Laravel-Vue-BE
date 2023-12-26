@@ -33,13 +33,14 @@ class PaymentController extends Controller
     public function recipientList($id, Request $request)
     {
 
-        // $recipientList = Payment::with('program', 'program.recipients', 'program.recipients.individualRecipient')->find($id);
+        $programData = Payment::with('program', 'program.type', 'program.frequency', 'program.recipients', 'program.recipients.individualRecipient')->find($id);
 
-        $recipientList = Receipient::with('individualRecipient')->where('program_id', $id)->where('status_id', 3)
+        $recipientList = Receipient::with('individualRecipient', 'program')->where('program_id', $id)->where('status_id', 3)
         ->orderBy('id', 'desc')->get();
 
-        return response()->json(
-             $recipientList
-        );
+        return response()->json([
+            'programData' => $programData,
+            'recipients' => $recipientList,
+        ]);
     }
 }

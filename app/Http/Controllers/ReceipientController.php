@@ -283,6 +283,56 @@ class ReceipientController extends Controller
         }
     }
 
+    public function update(Request $request, $id)
+    {
+        DB::beginTransaction();
+        try {
+        $rules = $this->getUpdateRules($id);
+        $messages = $this->getUpdateMessages();
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        $validator->validate();
+
+        $recipientData = [
+            'name' => $request->name,
+            'identification_number' => $request->identification_number,
+            'address' => $request->address,
+            'postcode' => $request->postcode,
+            'phone_number' => $request->phone_number,
+            'email' => $request->email,
+            'bank_id' => $request->bank_id,
+            'account_number' => $request->account_number,
+            'program_id' => $request->program_id,
+            'status_id' => Receipient::STATUS_SUBMITTED,
+        ];
+
+        $recipient = Receipient::find($id);
+        $recipient->update($recipientData);
+
+        DB::commit();
+
+            return response()->json([
+                'message' => 'Recipient Created Successfully',
+                'code' => 200,
+            ]);
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'An error occurred while creating the recipient',
+                'message' => $e->errors(),
+                'code' => 400,
+            ], 400);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'An error occurred while creating the recipient',
+                'code' => 500,
+            ], 500);
+        }
+    }
+    
+
     public function store(Request $request)
     {
         DB::beginTransaction();
@@ -294,15 +344,6 @@ class ReceipientController extends Controller
             $validator = Validator::make($request->all(), $rules, $messages);
 
             $validator->validate();
-    
-            // if ($validator->fails()) {
-            //     // DB::rollBack();
-            //     return response()->json([
-            //         'error' => 'Validation Error',
-            //         'messages' => $validator->errors(),
-            //         'code' => 400,
-            //     ]);
-            // }
     
             $recipientData = [
                 'name' => $request->name,
@@ -376,14 +417,7 @@ class ReceipientController extends Controller
                 $dynamicInputValidator = Validator::make($dynamicInput, $dynamicInputRules, $this->getMessages());
 
                 $dynamicInputValidator->validate();
-                // if ($dynamicInputValidator->fails()) {
-                //     // DB::rollBack();
-                //     return response()->json([
-                //         'error' => 'Validation Error',
-                //         'messages' => $dynamicInputValidator->errors(),
-                //         'code' => 400,
-                //     ]);
-                // }
+
                 IndividualSchedularRecipient::create([
                     'recipient_id' => $recipientID,
                     'program_id' => $programId,
@@ -412,7 +446,15 @@ class ReceipientController extends Controller
             ], 500);
         }
     }
-    
+
+    public function edit($id, Request $request)
+    {
+        $recipient = Receipient::with('program', 'program.type', 'program.frequency',)->find($id);
+
+        $user = $request->user();
+        $user->log(Receipient::ACTIVITY_UPDATED, "App\Models\BankPanel");
+        return response()->json($recipient);
+    }
 
     public function program($id)
     {
@@ -465,7 +507,22 @@ class ReceipientController extends Controller
         ]);
     }
 
-    public function getMessages()
+    public function getUpdateRules($id)
+    {
+        return [
+            'name' => 'required|string',
+            'identification_number' => 'required|numeric|digits:12|unique:receipients,identification_number,'. $id,
+            'address' => 'required|string',
+            'postcode' => 'required|numeric',
+            'phone_number' => 'required|regex:/^\d+$/',
+            'email' => 'required|email|unique:receipients,email,'. $id,
+            'bank_id' => 'required',
+            'account_number' => 'required|numeric',
+            'program_id' => 'required',
+        ];
+    }
+
+    public function getUpdateMessages()
     {
         return [
             'name.required' => 'Please insert the recipient name.',
@@ -499,6 +556,27 @@ class ReceipientController extends Controller
             'bank_id' => 'required',
             'account_number' => 'required|numeric',
             'program_id' => 'required',
+        ];
+    }
+    public function getMessages()
+    {
+        return [
+            'name.required' => 'Please insert the recipient name.',
+            'identification_number.required' => 'Please insert the identification number.',
+            'identification_number.numeric' => 'Identification number must be numeric only.',
+            'identification_number.digits' => 'Identification number must be 12 digits.',
+            'address.required' => 'Please insert the recipient address.',
+            'postcode.required' => 'Please insert the postcode number.',
+            'postcode.numeric' => 'Postcode number must be numeric.',
+            'phone_number.required' => 'Please insert the phone number.',
+            'phone_number.regex' => 'Phone number must be a valid numeric format.',
+            'email.required' => 'Please insert the email address.',
+            'email.email' => 'Please provide a valid email address.',
+            'email.unique' => 'This email address is already taken.',
+            'bank_id.required' => 'Bank name is required.',
+            'account_number.required' => 'Please insert the account number.',
+            'account_number.numeric' => 'Account number must be numeric.',
+            'program_id.required' => 'Program name is required.',
         ];
     }
 
