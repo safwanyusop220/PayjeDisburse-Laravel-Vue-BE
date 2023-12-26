@@ -33,6 +33,7 @@ Route::prefix('authentications')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/landingPage', [AuthController::class, 'login']);
     Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum');
+    Route::get('/profile', [AuthController::class, 'getProfile'])->middleware('auth:sanctum');
     Route::get('/selectedUser/{id}', [AuthController::class, 'getUserRolePermission']);
     Route::delete('/destroy/{id}', [AuthController::class, 'destroy'])->middleware('auth:sanctum');
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
@@ -86,6 +87,8 @@ Route::prefix('receipients')->middleware('auth:sanctum')->group(function () {
     Route::put('/singleRejectSubmitted', [ReceipientController::class, 'singleRejectSubmitted']);
     Route::put('/singleApprove', [ReceipientController::class, 'singleApprove']);
     Route::put('/singleRejectApproval', [ReceipientController::class, 'singleRejectApproval']);
+    Route::get('/edit/{id}', [ReceipientController::class, 'edit']);
+    Route::post('/update/{id}', [ReceipientController::class, 'update']);
 });
 
 Route::prefix('payment')->middleware('auth:sanctum')->group(function () {
@@ -99,6 +102,7 @@ Route::prefix('bank-panel')->middleware('auth:sanctum')->group(function () {
     Route::delete('/destroy/{id}', [BankPanelController::class, 'destroy']);
     Route::get('/edit/{id}', [BankPanelController::class, 'edit']);
     Route::post('/update/{id}', [BankPanelController::class, 'update']);
+    Route::get('/search', [BankPanelController::class, 'search']);
 });
 
 Route::prefix('audit-trail')->middleware('auth:sanctum')->group(function () {

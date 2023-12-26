@@ -7,6 +7,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -115,11 +116,32 @@ class AuthController extends Controller
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
+
+        Log::info($user->role);
      
         return response()->json([
+            $userPermissions = $user->permissions,
             ...$user->toArray(),
+            'permissions' => $userPermissions,
+            'role' => $user->role->name,
             'token' => $user->createToken($request->device_name)->plainTextToken,
         ]);
+    }
+
+    public function getProfile()
+    {
+        $user = auth()->user();
+
+        if ($user instanceof User) {
+            return response()->json([
+                $userPermissions = $user->permissions,
+                ...$user->toArray(),
+                'permissions' => $userPermissions,
+                'role' => $user->role->name,
+            ]);
+        }
+
+        return response()->status(401);
     }
 
     public function user()

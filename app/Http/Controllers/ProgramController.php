@@ -457,6 +457,7 @@ class ProgramController extends Controller
             $program->total_month = $request->total_month;
             $program->total_year = $request->total_year; 
             $program->end_date = $request->end_date;
+            $program->status_id = Program::STATUS_SUBMITTED;
             $program->save();
 
             if ($program->type_id == 3) {
@@ -558,6 +559,7 @@ class ProgramController extends Controller
             'installmentPrograms' => $installmentPrograms,
         ]);
     }
+
     public function getUpdateRules($request, $id)
     {
         $rules = [

@@ -13,7 +13,9 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        Role::create(['name' => 'Admin', 'description' => 'Manages administration activities']);
+        Role::create(['name' => 'Administrator', 'description' => 'Manages administration activities']);
+        Role::create(['name' => 'Recommender', 'description' => 'Review and recommend all program & recipient request']);
+        Role::create(['name' => 'Approver', 'description' => 'Review and approve all program & recipient request']);
         Role::create(['name' => 'User', 'description' => 'Standard & basic access']);
     }
 }

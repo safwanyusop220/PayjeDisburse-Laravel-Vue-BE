@@ -10,8 +10,11 @@ use Illuminate\Support\Facades\Validator;
 
 class BankPanelController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->get('search');
+        $search = $request->get('page');
+        $search = $request->get('offset');
         $bankPanels = BankPanel::with('bank')->orderBy('id', 'desc')->get();
 
         return response()->json([
@@ -137,6 +140,19 @@ class BankPanelController extends Controller
                 'code' => 500,
             ], 500);
         }
+    }
+
+    public function search(Request $request)
+    {
+        $query = $request->get('query');
+
+        $results = BankPanel::where(function ($queryBuilder) use ($query) {
+            $queryBuilder->where('holder_name', 'like', "%{$query}%");
+                        // ->orWhere('bank.name', 'like', "%{$query}%");
+                        // ->orWhere('account_number', 'like', "%{$query}%");
+        })->get();
+
+        return response()->json($results);
     }
 
     public function getMessages()
