@@ -246,6 +246,7 @@ class ProgramController extends Controller
     {
         try {
             $programId = $request->input('programId');
+            
             $program = Program::find($programId);
 
             if (!$program) {
@@ -560,6 +561,19 @@ class ProgramController extends Controller
         ]);
     }
 
+    public function getRecommendCount()
+    {
+        $recommend = Program::with('type', 'status')->where('status_id', 1)->orderBy('id', 'desc')->get();
+
+        $totalRecommendations = $recommend->count();
+
+        return response()->json([
+            'total_recommendations' => $totalRecommendations,
+            'message'  => 'recommendations',
+            'code'     => 200,
+        ]);
+    }
+
     public function getUpdateRules($request, $id)
     {
         $rules = [
@@ -600,14 +614,14 @@ class ProgramController extends Controller
     {
         return [
             'created_by_id.exists' => 'The specified user does not exist.',
-            'name.required' => 'Please insert program name.',
-            'disburse_amount.required' => 'Please insert disburse amount.',
-            'payment_date.required' => 'Please insert payment date.',
-            'code.unique' => 'The program code must be unique.',
-            'type_id.in' => 'Invalid program type.',
-            'total_month.required_if' => 'The total month field is required.',
-            'total_year.required_if' => 'The total year field is required',
-            'value.required' => 'The amount field is required',
+            'name.required' => '* Program name is required',
+            'disburse_amount.required' => '* Disburse amount is required',
+            'payment_date.required' => '* Payment date is required',
+            'code.unique' => '* Program Code must be unique',
+            'type_id.in' => '* Program Type is invalid',
+            'total_month.required_if' => '* Total month is required',
+            'total_year.required_if' => '* Total year is required',
+            'value.required' => '* Amount is required',
         ];
     }
 
@@ -628,7 +642,6 @@ class ProgramController extends Controller
                 'payment_date' => 'required|date',
                 'total_month' => 'required_if:frequency_id,2',
                 'total_year' => 'required_if:frequency_id,3',
-
             ]);
         }
 
@@ -651,14 +664,18 @@ class ProgramController extends Controller
     {
         return [
             'created_by_id.exists' => 'The specified user does not exist.',
-            'name.required' => 'Please insert program name.',
-            'disburse_amount.required' => 'Please insert disburse amount.',
-            'payment_date.required' => 'Please insert payment date.',
-            'code.unique' => 'The program code must be unique.',
-            'type_id.in' => 'Invalid program type.',
-            'total_month.required_if' => 'The total month field is required.',
-            'total_year.required_if' => 'The total year field is required',
-            'value.required' => 'The amount field is required',
+            'name.required' => '* Program name is required',
+            'bank_panel.required' => '* Bank panel is required',
+            'payment_date.required' => '* Payment date is required',
+            'code.unique' => '* Program Code must be unique',
+            'code.required' => '* Program Code is required',
+            'type_id.in' => '* Program Type is invalid',
+            'disburse_amount.required' => '* Disburse amount is required',
+            'total_month.required_if' => '* Total month is required',
+            'total_year.required_if' => '* Total year is required',
+            'value.required' => '* Amount is required',
+            'frequency_id.required' => '* Frequency is required',
+            'frequency_id.exists' => '* Selected frequency id is invalid.'
         ];
     }
 }

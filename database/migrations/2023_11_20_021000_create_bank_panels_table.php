@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('bank_panels', function (Blueprint $table) {
             $table->id();
-            $table->string('holder_name');
+            $table->string('organization_name');
             $table->unsignedBigInteger('bank_id');
             $table->foreign('bank_id')->references('id')->on('ref_banks');
             $table->unsignedBigInteger('account_number');

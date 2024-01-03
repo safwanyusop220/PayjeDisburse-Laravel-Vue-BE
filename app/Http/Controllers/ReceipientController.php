@@ -66,15 +66,21 @@ class ReceipientController extends Controller
         ]);
     }
 
-    public function endorse(Request $request)
+    public function bulkApproveRecommendation(Request $request)
     {
         try {
             $checkedIDs = $request->input('checkedIDs');
+            $recommend_by_id = $request->input('userId');
+
+            $recommendDate = new \DateTime('now', new \DateTimeZone('UTC'));
+            $recommendDate->setTimezone(new \DateTimeZone('Asia/Kuala_Lumpur'));
 
             $receipientToUpdate = Receipient::whereIn('id', $checkedIDs)->get();
     
-            $receipientToUpdate->each(function ($receipient) {
+            $receipientToUpdate->each(function ($receipient) use ($recommend_by_id, $recommendDate) {
                 $receipient->update([
+                    'recommend_by_id' => $recommend_by_id,
+                    'recommend_date'  => $recommendDate,
                     'status_id' => Receipient::STATUS_RECOMMENDED,
                     'reason_to_reject' => '-'
                 ]);
@@ -93,11 +99,17 @@ class ReceipientController extends Controller
     {
         try {
             $checkedIDs = $request->input('checkedIDs');
+            $rejected_by_id = $request->input('userId');
+
+            $rejected_date = new \DateTime('now', new \DateTimeZone('UTC'));
+            $rejected_date->setTimezone(new \DateTimeZone('Asia/Kuala_Lumpur'));
 
             $receipientToUpdate = Receipient::whereIn('id', $checkedIDs)->get();
             $reason_to_reject =  $request->text;
-            $receipientToUpdate->each(function ($receipient) use ($reason_to_reject) {
+            $receipientToUpdate->each(function ($receipient) use ($reason_to_reject, $rejected_date, $rejected_by_id) {
                 $receipient->update([
+                    'rejected_by_id' => $rejected_by_id,
+                    'rejected_date'  => $rejected_date,
                     'status_id' => Receipient::STATUS_REJECT,
                     'reason_to_reject' => $reason_to_reject
                 ]);
@@ -116,6 +128,10 @@ class ReceipientController extends Controller
     {
         try {
             $receipientId = $request->input('receipientId');
+            $recommend_by_id = $request->input('userId');
+
+            $recommendDate = new \DateTime('now', new \DateTimeZone('UTC'));
+            $recommendDate->setTimezone(new \DateTimeZone('Asia/Kuala_Lumpur'));
 
             $receipient = Receipient::find($receipientId);
 
@@ -124,6 +140,8 @@ class ReceipientController extends Controller
             }
 
             $receipient->update([
+                'recommend_by_id' => $recommend_by_id,
+                'recommend_date'  => $recommendDate,
                 'status_id' => Receipient::STATUS_RECOMMENDED,
                 'reason_to_reject' => '-'
             ]);
@@ -141,6 +159,11 @@ class ReceipientController extends Controller
     {
         try {
             $receipientId = $request->input('receipientId');
+            $rejected_by_id = $request->input('userId');
+
+            $rejected_date = new \DateTime('now', new \DateTimeZone('UTC'));
+            $rejected_date->setTimezone(new \DateTimeZone('Asia/Kuala_Lumpur'));
+
             $receipient = Receipient::find($receipientId);
 
             if (!$receipient) {
@@ -148,6 +171,8 @@ class ReceipientController extends Controller
             }
 
             $receipient->update([
+                'rejected_by_id' => $rejected_by_id,
+                'rejected_date'  => $rejected_date,
                 'status_id' => Receipient::STATUS_REJECT,
                 'reason_to_reject' =>  $request->text
             ]);
@@ -165,7 +190,10 @@ class ReceipientController extends Controller
     {
         try {
             $receipientId = $request->input('receipientId');
+            $approved_by_id = $request->input('userId');
 
+            $approvedDate = new \DateTime('now', new \DateTimeZone('UTC'));
+            $approvedDate->setTimezone(new \DateTimeZone('Asia/Kuala_Lumpur'));
             $receipient = Receipient::find($receipientId);
 
             if (!$receipient) {
@@ -173,6 +201,8 @@ class ReceipientController extends Controller
             }
 
             $receipient->update([
+                'approved_by_id' => $approved_by_id,
+                'approved_date'  => $approvedDate,
                 'status_id' => Receipient::STATUS_APPROVE,
                 'reason_to_reject' => '-'
             ]);
@@ -198,6 +228,10 @@ class ReceipientController extends Controller
     {
         try {
             $receipientId = $request->input('receipientId');
+            $rejected_by_id = $request->input('userId');
+
+            $rejected_date = new \DateTime('now', new \DateTimeZone('UTC'));
+            $rejected_date->setTimezone(new \DateTimeZone('Asia/Kuala_Lumpur'));
 
             $receipient = Receipient::find($receipientId);
 
@@ -206,6 +240,8 @@ class ReceipientController extends Controller
             }
 
             $receipient->update([
+                'rejected_by_id' => $rejected_by_id,
+                'rejected_date'  => $rejected_date,
                 'status_id' => Receipient::STATUS_REJECT,
                 'reason_to_reject' => $request->text
             ]);
@@ -230,15 +266,21 @@ class ReceipientController extends Controller
         ]);
     }
 
-    public function approve(Request $request)
+    public function bulkApprove(Request $request)
     {
         try {
             $checkedIDs = $request->input('checkedIDs');
+            $approved_by_id = $request->input('userId');
+
+            $approvedDate = new \DateTime('now', new \DateTimeZone('UTC'));
+            $approvedDate->setTimezone(new \DateTimeZone('Asia/Kuala_Lumpur'));
     
             $receipientToUpdate = Receipient::whereIn('id', $checkedIDs)->get();
     
-            $receipientToUpdate->each(function ($receipient) {
+            $receipientToUpdate->each(function ($receipient) use ($approved_by_id,$approvedDate){
                 $receipient->update([
+                    'approved_by_id' => $approved_by_id,
+                    'approved_date'  => $approvedDate,
                     'status_id' => Receipient::STATUS_APPROVE,
                     'reason_to_reject' => '-'
                 ]);
@@ -264,11 +306,17 @@ class ReceipientController extends Controller
     {
         try {
             $checkedIDs = $request->input('checkedIDs');
+            $rejected_by_id = $request->input('userId');
+
+            $rejected_date = new \DateTime('now', new \DateTimeZone('UTC'));
+            $rejected_date->setTimezone(new \DateTimeZone('Asia/Kuala_Lumpur'));
 
             $receipientToUpdate = Receipient::whereIn('id', $checkedIDs)->get();
             $reason_to_reject =  $request->text;
-            $receipientToUpdate->each(function ($receipient) use ($reason_to_reject) {
+            $receipientToUpdate->each(function ($receipient) use ($reason_to_reject, $rejected_by_id, $rejected_date) {
                 $receipient->update([
+                    'rejected_by_id' => $rejected_by_id,
+                    'rejected_date'  => $rejected_date,
                     'status_id' => Receipient::STATUS_REJECT,
                     'reason_to_reject' => $reason_to_reject
                 ]);
@@ -338,12 +386,20 @@ class ReceipientController extends Controller
         DB::beginTransaction();
         try {
 
-            $rules = $this->getRules();
+            $rules = $this->getRules($request);
             $messages = $this->getMessages();
     
             $validator = Validator::make($request->all(), $rules, $messages);
 
-            $validator->validate();
+            // $validator->validate();
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'error' => 'Validation Error',
+                    'messages' => $validator->errors(),
+                    'code' => 400,
+                ]);
+            }
     
             $recipientData = [
                 'name' => $request->name,
@@ -356,6 +412,7 @@ class ReceipientController extends Controller
                 'account_number' => $request->account_number,
                 'program_id' => $request->program_id,
                 'status_id' => 1,
+                'created_by_id' => $request->created_by_id,
             ];
     
             $recipient = Receipient::create($recipientData);
@@ -386,7 +443,9 @@ class ReceipientController extends Controller
             if ($request->frequency_id == 2) {
                 $individualRecipientData['total_month'] = $request->total_month;
                 $individualRecipientData['end_date'] = $request->end_date;
-            } elseif ($request->frequency_id == 3) {
+            } 
+            
+            elseif ($request->frequency_id == 3) {
                 $individualRecipientData['total_year'] = $request->total_year;
                 $individualRecipientData['end_date'] = $request->end_date;
             }
@@ -495,7 +554,7 @@ class ReceipientController extends Controller
 
     public function show($id)
     {
-        $receipient = Receipient::with('program', 'program.type', 'program.frequency', 'program.installmentPrograms', 'individualRecipient', 'individualRecipient.frequency', 'individualRecipient.recipient', 'individualRecipient.recipient.schedular')->find($id);
+        $receipient = Receipient::with('program', 'program.type', 'program.frequency', 'program.installmentPrograms', 'individualRecipient', 'individualRecipient.frequency', 'individualRecipient.recipient', 'individualRecipient.recipient.schedular', 'status', 'user', 'recommend_by', 'approved_by', 'rejected_by')->find($id);
     
         if (!$receipient) {
 
@@ -544,8 +603,9 @@ class ReceipientController extends Controller
         ];
     }
 
-    public function getRules()
+    public function getRules(Request $request)
     {
+        $accountNumberLength = $this->getAccountNumberLength($request->input('bank_id'));
         return [
             'name' => 'required|string',
             'identification_number' => 'required|numeric|digits:12|unique:receipients,identification_number',
@@ -554,30 +614,37 @@ class ReceipientController extends Controller
             'phone_number' => 'required|regex:/^\d+$/',
             'email' => 'required|email|unique:receipients,email',
             'bank_id' => 'required',
-            'account_number' => 'required|numeric',
+            'account_number' => 'required|numeric|unique:bank_panels,account_number|digits:' . $accountNumberLength,
             'program_id' => 'required',
         ];
     }
     public function getMessages()
     {
         return [
-            'name.required' => 'Please insert the recipient name.',
-            'identification_number.required' => 'Please insert the identification number.',
-            'identification_number.numeric' => 'Identification number must be numeric only.',
-            'identification_number.digits' => 'Identification number must be 12 digits.',
-            'address.required' => 'Please insert the recipient address.',
-            'postcode.required' => 'Please insert the postcode number.',
-            'postcode.numeric' => 'Postcode number must be numeric.',
-            'phone_number.required' => 'Please insert the phone number.',
-            'phone_number.regex' => 'Phone number must be a valid numeric format.',
-            'email.required' => 'Please insert the email address.',
-            'email.email' => 'Please provide a valid email address.',
-            'email.unique' => 'This email address is already taken.',
-            'bank_id.required' => 'Bank name is required.',
-            'account_number.required' => 'Please insert the account number.',
-            'account_number.numeric' => 'Account number must be numeric.',
-            'program_id.required' => 'Program name is required.',
+            'name.required' => '* Recipient Name is required',
+            'identification_number.required' => '* Identification number is required',
+            'identification_number.numeric' => '* Identification number must be numeric only',
+            'identification_number.digits' => '* Identification number must be 12 digits',
+            'address.required' => '* Recipient Address is required',
+            'postcode.required' => '* Recipient Postcode is required',
+            'postcode.numeric' => '* Recipient Postcode number must be numeric',
+            'phone_number.required' => '* Recipient Phone number is required',
+            'phone_number.regex' => '* Recipient Phone number must be a valid numeric format',
+            'email.required' => '* Recipient email is required',
+            'email.email' => '* Recipient Please provide a valid email address',
+            'email.unique' => '* Email address is already taken',
+            'bank_id.required' => '* Recipient bank type is required',
+            'account_number.required' => '* Account number is required',
+            'account_number.numeric' => '* Recipient Account number must be numeric',
+            'program_id.required' => '* Program name is required.',
         ];
+    }
+
+    public function getAccountNumberLength($bankId)
+    {
+        $bank = RefBank::find($bankId);
+
+        return $bank ? $bank->account_number_length : 0;
     }
 
     public function getIndividualRecipientRules()

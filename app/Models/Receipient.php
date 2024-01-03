@@ -23,7 +23,9 @@ class Receipient extends Model
 
     protected $fillable = [
         'status_id', 'reason_to_reject','name','identification_number','address','postcode','phone_number',
-        'email','bank_id','account_number','program_id','recipient_id','disburse_amount','frequency_id','payment_date','total_month','total_year',
+        'email','bank_id','account_number','program_id','recipient_id','disburse_amount','frequency_id','payment_date',
+        'total_month','total_year', 'created_by_id', 'recommend_by_id', 'recommend_date', 'approved_by_id', 'approved_date',
+        'rejected_by_id', 'rejected_date'
     ];
 
 
@@ -40,6 +42,26 @@ class Receipient extends Model
     public function status()
     {
         return $this->belongsTo(Status::class, 'status_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'created_by_id');
+    }
+
+    public function recommend_by()
+    {
+        return $this->belongsTo(User::class, 'recommend_by_id');
+    }
+
+    public function approved_by()
+    {
+        return $this->belongsTo(User::class, 'approved_by_id');
+    }
+
+    public function rejected_by()
+    {
+        return $this->belongsTo(User::class, 'rejected_by_id');
     }
 
     public function frequency()

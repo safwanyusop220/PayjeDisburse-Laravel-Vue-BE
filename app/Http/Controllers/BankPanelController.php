@@ -41,9 +41,9 @@ class BankPanelController extends Controller
             }
 
             $bankPanel = BankPanel::create([
-                'holder_name'    => $request->holder_name,
-                'bank_id'        => $request->bank_id,
-                'account_number' => $request->account_number,
+                'organization_name'    => $request->organization_name,
+                'bank_id'              => $request->bank_id,
+                'account_number'       => $request->account_number,
             ]);
 
             $user = $request->user();
@@ -119,9 +119,9 @@ class BankPanelController extends Controller
             }
 
             $bankPanel->update([
-                'holder_name' => $request->holder_name,
-                'bank_id' => $request->bank_id,
-                'account_number' => $request->account_number,
+                'organization_name' => $request->organization_name,
+                'bank_id'           => $request->bank_id,
+                'account_number'    => $request->account_number,
             ]);
 
             $user = $request->user();
@@ -147,7 +147,7 @@ class BankPanelController extends Controller
         $query = $request->get('query');
 
         $results = BankPanel::where(function ($queryBuilder) use ($query) {
-            $queryBuilder->where('holder_name', 'like', "%{$query}%");
+            $queryBuilder->where('organization_name', 'like', "%{$query}%");
                         // ->orWhere('bank.name', 'like', "%{$query}%");
                         // ->orWhere('account_number', 'like', "%{$query}%");
         })->get();
@@ -158,11 +158,12 @@ class BankPanelController extends Controller
     public function getMessages()
     {
         return [
-            'holder_name.required' => 'Please insert the holder name.',
-            'bank_id.required' => 'Please insert the bank ID.',
-            'account_number.required' => 'Account number is required.',
-            'account_number.numeric' => 'Account number must be numeric.',
-            'account_number.digits' => 'Account number must be :digits digits.',
+            'organization_name.required' => '* Organization name is required',
+            'bank_id.required' => '* Bank type is required',
+            'account_number.required' => '* Account number is required',
+            'account_number.numeric' => '* Account number must be numeric',
+            'account_number.digits' => '* Account number must be :digits digits',
+            'account_number.unique' => '* Account number must be unique',
         ];
     }
 
@@ -170,9 +171,9 @@ class BankPanelController extends Controller
     {
         $accountNumberLength = $this->getAccountNumberLength($request->input('bank_id'));
         return [
-            'holder_name'    => 'required|string',
+            'organization_name'    => 'required|string',
             'bank_id'        => 'required|numeric',
-            'account_number' => 'required|numeric|digits:' . $accountNumberLength
+            'account_number' => 'required|numeric|unique:bank_panels,account_number|digits:' . $accountNumberLength
         ];
     }
 

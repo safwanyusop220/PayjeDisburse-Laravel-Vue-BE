@@ -212,21 +212,21 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
             'role' => 'required|exists:roles,id',
-            'permissions.required' => 'At least one permission is required.'
+            'permissions' => 'required'
         ];
     }
 
     public function getMessages()
     {
         return [
-            'name.required' => 'The name field is required.',
-            'email.required' => 'The email field is required.',
-            'email.email' => 'Invalid email address.',
-            'email.unique' => 'The email address is already in use.',
-            'password.required' => 'The password field is required.',
-            'password.min' => 'The password must be at least :min characters.',
-            'role.required' => 'The role field is required.',
-            'permissions' => 'required'
+            'name.required' => '* Name field is required',
+            'email.required' => '* Email field is required',
+            'email.email' => '* Email address is invalid',
+            'email.unique' => ' Email address is already in use',
+            'password.required' => '* Password field is required',
+            'password.min' => '* Password must be at least :min characters',
+            'role.required' => '* Role field is required',
+            'permissions.required' => '* At least one permission is required'
         ];
     }
 }

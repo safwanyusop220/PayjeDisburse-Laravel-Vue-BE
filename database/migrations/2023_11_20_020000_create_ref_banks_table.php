@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('ref_banks', function (Blueprint $table) {
             $table->id();
+            $table->string('abbreviation')->nullable();
             $table->string('name')->unique();
             $table->string('bnm_code')->unique();
             $table->string('logo');

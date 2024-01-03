@@ -44,6 +44,7 @@ class RefBank extends Model
     const MBSB = 33;
 
     protected $fillable = [
+        'abbreviation',
         'name',
         'bnm_code',
         'logo',
@@ -57,7 +58,7 @@ class RefBank extends Model
 
     public function receiver()
     {
-        return $this->hasMany(Receiver::class);
+        return $this->hasMany(Receipient::class);
     }
 
     public function allocation()
