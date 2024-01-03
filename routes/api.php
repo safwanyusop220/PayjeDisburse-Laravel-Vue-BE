@@ -67,6 +67,7 @@ Route::prefix('programs')->middleware('auth:sanctum')->group(function () {
     Route::put('/singleReject', [ProgramController::class, 'singleReject']);
     Route::get('/bank-panel', [ProgramController::class, 'bankPanels']);
     Route::get('/show/{id}', [ProgramController::class, 'show']);
+    Route::get('/getRecommendCount', [ProgramController::class, 'getRecommendCount']);
 });
 
 Route::prefix('receipients')->middleware('auth:sanctum')->group(function () {
@@ -76,9 +77,9 @@ Route::prefix('receipients')->middleware('auth:sanctum')->group(function () {
     Route::get('/approval', [ReceipientController::class, 'approval']);
     Route::get('/programs', [ReceipientController::class, 'programs']);
     Route::get('/banks', [ReceipientController::class, 'banks']);
-    Route::put('/endorse', [ReceipientController::class, 'endorse']);
+    Route::put('/endorse', [ReceipientController::class, 'bulkApproveRecommendation']);
     Route::put('/bulkRejectRecommendation', [ReceipientController::class, 'bulkRejectRecommendation']);
-    Route::put('/approve', [ReceipientController::class, 'approve']);
+    Route::put('/approve', [ReceipientController::class, 'bulkApprove']);
     Route::put('/bulkRejectApproval', [ReceipientController::class, 'bulkRejectApproval']);
     Route::get('/program/show/{id}', [ReceipientController::class, 'program']);
     Route::delete('/destroy/{id}', [ReceipientController::class, 'destroy']);

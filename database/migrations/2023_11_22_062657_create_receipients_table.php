@@ -27,6 +27,17 @@ return new class extends Migration
             $table->string('postcode')->nullable();
             $table->string('account_number')->nullable();
             $table->string('reason_to_reject')->default('-');
+            $table->unsignedBigInteger('created_by_id');
+            $table->foreign('created_by_id')->references('id')->on('users');
+            $table->unsignedBigInteger('recommend_by_id')->nullable();
+            $table->foreign('recommend_by_id')->references('id')->on('users')->default(0)->nullable();
+            $table->dateTime('recommend_date')->nullable();
+            $table->unsignedBigInteger('approved_by_id')->nullable();
+            $table->foreign('approved_by_id')->references('id')->on('users')->default(0)->nullable();
+            $table->dateTime('approved_date')->nullable();
+            $table->unsignedBigInteger('rejected_by_id')->nullable();
+            $table->foreign('rejected_by_id')->references('id')->on('users')->default(0)->nullable();
+            $table->dateTime('rejected_date')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

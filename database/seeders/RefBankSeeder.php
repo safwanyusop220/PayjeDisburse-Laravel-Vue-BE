@@ -19,6 +19,7 @@ class RefBankSeeder extends Seeder
             RefBank::updateOrInsert(
                 ['id' => $bank['id']],
                 [
+                    'abbreviation' => $bank['abbreviation'],
                     'name' => $bank['name'],
                     'bnm_code' => $bank['bnm_code'],
                     'logo' => $bank['logo'],

@@ -190,9 +190,9 @@ class RoleController extends Controller
     public function getMessages()
     {
         return [
-            'name.required' => 'Role name is required',
-            'description.required' => 'Role description is required.',
-            'permissions.required' => 'At least one permission is required.'
+            'name.required' => '* Role name is required',
+            'description.required' => '* Role description is required.',
+            'permissions.required' => '* At least one permission is required.'
         ];
     }
 

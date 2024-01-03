@@ -13,9 +13,9 @@ class BankPanelSeeder extends Seeder
      */
     public function run(): void
     {
-        BankPanel::create(['holder_name' => 'Abdillah Safwan', 'bank_id' => 5, 'account_number' => '161024581121']);
-        BankPanel::create(['holder_name' => 'Nadiatul Najihah', 'bank_id' => 22, 'account_number' => '161023847116']);
-        BankPanel::create(['holder_name' => 'Nadia', 'bank_id' => 3, 'account_number' => '1610343447116']);
-        BankPanel::create(['holder_name' => 'Safwan', 'bank_id' => 25, 'account_number' => '1610347116']);
+        BankPanel::create(['organization_name' => 'SIDIC Technology', 'bank_id' => 22, 'account_number' => '161023847116']);
+        BankPanel::create(['organization_name' => 'Edaran Berhad', 'bank_id' => 3, 'account_number' => '1610343447116']);
+        BankPanel::create(['organization_name' => 'Edaran IT Services', 'bank_id' => 25, 'account_number' => '1610347116']);
+        BankPanel::create(['organization_name' => 'MIDC Technology', 'bank_id' => 5, 'account_number' => '161024581121']);
     }
 }

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BankPanel extends Model
 {
-    protected $fillable = ['holder_name', 'bank_id', 'account_number'];
+    protected $fillable = ['organization_name', 'bank_id', 'account_number'];
     use HasFactory, SoftDeletes;
     const ACTIVITY_CREATED = 1;
     const ACTIVITY_UPDATED = 2;
