@@ -6,7 +6,7 @@ use App\Http\Controllers\AuditTrailController;
 use App\Http\Controllers\BankPanelController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReceipientController;
-
+use App\Http\Controllers\RecipientProgramController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -90,6 +90,26 @@ Route::prefix('receipients')->middleware('auth:sanctum')->group(function () {
     Route::put('/singleRejectApproval', [ReceipientController::class, 'singleRejectApproval']);
     Route::get('/edit/{id}', [ReceipientController::class, 'edit']);
     Route::post('/update/{id}', [ReceipientController::class, 'update']);
+    Route::get('/view-recipient/{id}', [ReceipientController::class, 'viewRecipient']);
+});
+
+Route::prefix('recipient-program')->middleware('auth:sanctum')->group(function () {
+    Route::post('/store', [RecipientProgramController::class, 'store']);
+    Route::get('/recipient/{id}', [RecipientProgramController::class, 'recipient']);
+    Route::get('/programs/{id}', [RecipientProgramController::class, 'programs']);
+    Route::get('/recommendation', [RecipientProgramController::class, 'recommendation']);
+    Route::get('/approval', [RecipientProgramController::class, 'approval']);
+
+    Route::put('/bulkApproveRecommendation', [RecipientProgramController::class, 'bulkApproveRecommendation']);
+    Route::put('/bulkRejectRecommendation', [RecipientProgramController::class, 'bulkRejectRecommendation']);
+    Route::get('/show/{id}', [RecipientProgramController::class, 'show']);
+    Route::put('/singleRecommendation', [RecipientProgramController::class, 'singleRecommendation']);
+    Route::put('/singleRejectSubmitted', [RecipientProgramController::class, 'singleRejectSubmitted']);
+
+    Route::put('/bulkApprove', [RecipientProgramController::class, 'bulkApprove']);
+    Route::put('/bulkRejectApproval', [RecipientProgramController::class, 'bulkRejectApproval']);
+    Route::put('/singleApprove', [RecipientProgramController::class, 'singleApprove']);
+    Route::put('/singleRejectApproval', [RecipientProgramController::class, 'singleRejectApproval']);
 });
 
 Route::prefix('payment')->middleware('auth:sanctum')->group(function () {

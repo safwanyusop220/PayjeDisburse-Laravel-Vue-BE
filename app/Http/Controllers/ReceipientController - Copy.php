@@ -8,7 +8,6 @@ use App\Models\InstallmentProgram;
 use App\Models\Payment;
 use App\Models\Program;
 use App\Models\Receipient;
-use App\Models\RecipientProgram;
 use App\Models\RefBank;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +16,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
-class ReceipientController extends Controller
+class ReceipientControllerBackup extends Controller
 {
     public function index()
     {
@@ -383,11 +382,15 @@ class ReceipientController extends Controller
 
     public function store(Request $request)
     {
+        DB::beginTransaction();
         try {
+
             $rules = $this->getRules($request);
             $messages = $this->getMessages();
-
+    
             $validator = Validator::make($request->all(), $rules, $messages);
+
+            // $validator->validate();
 
             if ($validator->fails()) {
                 return response()->json([
@@ -396,7 +399,7 @@ class ReceipientController extends Controller
                     'code' => 400,
                 ]);
             }
-
+    
             $recipientData = [
                 'name' => $request->name,
                 'identification_number' => $request->identification_number,
@@ -406,96 +409,100 @@ class ReceipientController extends Controller
                 'email' => $request->email,
                 'bank_id' => $request->bank_id,
                 'account_number' => $request->account_number,
+                'program_id' => $request->program_id,
                 'status_id' => 1,
                 'created_by_id' => $request->created_by_id,
             ];
-
+    
             $recipient = Receipient::create($recipientData);
             $recipientID = $recipient->id;
 
-            $recipientProgram = RecipientProgram::create([
-                'recipient_id' => $recipientID,
-                'created_by_id' => $request->created_by_id,
-                'program_id'   => $request->program_id,
-                'status_id'    => 1,
-            ]);
+            if ($recipient->program->type->id != 1) {
+                $user = $request->user();
+                $user->log(Receipient::ACTIVITY_CREATED, "App\Models\Receipient");
 
-            $individualRecipientData = [];
-
-            if ($recipientProgram->program->type->id == 1) {
-                $individualRecipientData = [
-                    'recipient_id' => $recipientID,
-                    'program_id' => $request->program_id,
-                    'disburse_amount' => $request->disburse_amount,
-                    'frequency_id' => $request->frequency_id,
-                    'payment_date' => $request->payment_date,
-                ];
-                
-                if ($request->frequency_id == 2) {
-                    $individualRecipientData['total_month'] = $request->total_month;
-                    $individualRecipientData['end_date'] = $request->end_date;
-                } 
-                
-                elseif ($request->frequency_id == 3) {
-                    $individualRecipientData['total_year'] = $request->total_year;
-                    $individualRecipientData['end_date'] = $request->end_date;
-                }
+                DB::commit();
+        
+                return response()->json([
+                    'recipient' =>  $recipient,
+                    'message' => 'Receipient Created Successfully',
+                    'code' => 200,
+                ]);
             }
-
-            if (!empty($individualRecipientData)) {
+    
+            $individualRecipientData = [
+                'recipient_id' => $recipientID,
+                'program_id' => $request->program_id,
+                'disburse_amount' => $request->disburse_amount,
+                'frequency_id' => $request->frequency_id,
+                'payment_date' => $request->payment_date,
+                'payment_date' => $request->payment_date,
+            ];
+            
+            if ($request->frequency_id == 2) {
+                $individualRecipientData['total_month'] = $request->total_month;
+                $individualRecipientData['end_date'] = $request->end_date;
+            } 
+            
+            elseif ($request->frequency_id == 3) {
+                $individualRecipientData['total_year'] = $request->total_year;
+                $individualRecipientData['end_date'] = $request->end_date;
+            }
+            
+            $individualValidator = Validator::make($individualRecipientData, $this->getIndividualRecipientRules(), $this->getMessages());
+            $individualValidator->validate();
+            
+            if ($request->frequency_id != 4) {
                 $individualRecipient = IndividualRecipient::create($individualRecipientData);
 
-                if($request->frequency_id == 4)
-                {
-                    $programId = $individualRecipient->program_id;
+                DB::commit();
 
-                    foreach ($request->dynamicInputValue as $dynamicInput) {
-                        $dynamicInputRules = [
-                            'payment_date' => 'required|date',
-                        ];
-    
-                        $dynamicInputValidator = Validator::make($dynamicInput, $dynamicInputRules, $this->getMessages());
-    
-                        $dynamicInputValidator->validate();
-    
-                        IndividualSchedularRecipient::create([
-                            'recipient_id' => $recipientID,
-                            'program_id' => $programId,
-                            'payment_date' => $dynamicInput['payment_date'],
-                        ]);
-                    }
-                }
+                return response()->json([
+                    'message' => 'Recipient Created Successfully',
+                    'code' => 200,
+                ]);
             }
 
+            $individualRecipient = IndividualRecipient::create($individualRecipientData);
+
+            $programId = $individualRecipient->program_id;
+
+            foreach ($request->dynamicInputValue as $dynamicInput) {
+                $dynamicInputRules = [
+                    'payment_date' => 'required|date',
+                ];
+
+                $dynamicInputValidator = Validator::make($dynamicInput, $dynamicInputRules, $this->getMessages());
+
+                $dynamicInputValidator->validate();
+
+                IndividualSchedularRecipient::create([
+                    'recipient_id' => $recipientID,
+                    'program_id' => $programId,
+                    'payment_date' => $dynamicInput['payment_date'],
+                ]);
+            }
+
+            DB::commit();
+
             return response()->json([
-                'recipient' =>  $recipient,
                 'message' => 'Recipient Created Successfully',
                 'code' => 200,
             ]);
-
         } catch (ValidationException $e) {
+            DB::rollBack();
             return response()->json([
-                'error' => 'Validation Error',
+                'error' => 'An error occurred while creating the recipient',
                 'message' => $e->errors(),
                 'code' => 400,
             ], 400);
         } catch (\Exception $e) {
-            // Log the exception or provide more detailed information
+            DB::rollBack();
             return response()->json([
-                'error' => 'Internal Server Error',
-                'message' => $e->getMessage(),  // Providing the actual exception message
+                'error' => 'An error occurred while creating the recipient',
                 'code' => 500,
             ], 500);
         }
-    }
-
-    public function viewRecipient($id, Request $request)
-    {
-        $recipient = Receipient::with('bank')->find($id);
-
-        $user = $request->user();
-        $user->log(Receipient::ACTIVITY_UPDATED, "App\Models\BankPanel");
-        return response()->json($recipient);
     }
 
     public function edit($id, Request $request)
@@ -607,6 +614,7 @@ class ReceipientController extends Controller
             'email' => 'required|email|unique:receipients,email',
             'bank_id' => 'required',
             'account_number' => 'required|numeric|unique:bank_panels,account_number|digits:' . $accountNumberLength,
+            'program_id' => 'required',
         ];
     }
     public function getMessages()

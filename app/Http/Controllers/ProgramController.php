@@ -7,6 +7,7 @@ use App\Models\BankPanel;
 use App\Models\InstallmentProgram;
 use App\Models\Payment;
 use App\Models\Program;
+use Carbon\Carbon;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -48,7 +49,6 @@ class ProgramController extends Controller
             $program = new Program();
             $program->created_by_id = $request->created_by_id;
             $program->name = $request->name;
-            $program->code = $request->code;
             $program->type_id = $request->type_id;
             $program->status_id = 1;
             $program->bank_panel = $request->bank_panel;
@@ -66,7 +66,38 @@ class ProgramController extends Controller
             }
             $program->save();
 
+            $runningNumberRecord = DB::table('running_numbers')->first();
+
+            // If a record exists, increment the running number; otherwise, initialize it to 1
+            if ($runningNumberRecord) {
+                $runningNumber = $runningNumberRecord->last_number + 1;
+                DB::table('running_numbers')
+                    ->update(['last_number' => $runningNumber]);
+            } else {
+                $runningNumber = 1;
+                DB::table('running_numbers')->insert([
+                    'last_number' => $runningNumber
+                ]);
+            }
+
+            // Pad the running number with leading zeros to ensure it's always a 3-digit number
+            $formattedRunningNumber = str_pad($runningNumber, 3, '0', STR_PAD_LEFT);
+
             $programId = $program->id;
+
+            // Generate the code using the padded running number
+            $codePrefix = $this->getCodePrefix($program->name);  // Adjust as per your needs
+            $timestamp = Carbon::now()->timestamp;
+            $date = Carbon::createFromTimestamp($timestamp);
+            $formattedDate = $date->format('ymd');
+            $program->code = $codePrefix . $formattedDate . $formattedRunningNumber;
+
+            // $codePrefix = $this->getCodePrefix($program->name);
+            // $timestamp = Carbon::now()->timestamp;
+            // $date = Carbon::createFromTimestamp($timestamp);
+            // $formattedDate = $date->format('ymd');
+            // $program->code = $codePrefix.$formattedDate.$runningNumber;
+            $program->save();
 
             if ($program->type_id == 3) {
                 foreach ($request->dynamicInputValue as $dynamicInput) {
@@ -139,6 +170,19 @@ class ProgramController extends Controller
                 'code' => 500,
             ], 500);
         }
+    }
+
+    public function getCodePrefix($name)
+    {
+        $words = explode(' ', $name);
+
+        if (sizeof($words) > 1) {
+            return implode(array_map(function ($word) {
+                return strtoupper(substr($word, 0, 1));
+            }, array_slice($words, 0, 2)));
+        }
+
+        return strtoupper(substr($name, 0, 2));
     }
 
     public function recommendation()
@@ -629,7 +673,7 @@ class ProgramController extends Controller
     {
         $rules = [
             'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:programs,code',
+            // 'code' => 'required|string|max:50|unique:programs,code',
             'type_id' => 'required',
             'bank_panel' => 'required',
             'created_by_id' => 'exists:users,id',

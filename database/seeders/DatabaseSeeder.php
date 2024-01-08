@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ProgramTypeSeeder::class);
         $this->call(FrequencySeeder::class);
         $this->call(StatusSeeder::class);
-        $this->call(ProgramSeeder::class);
+        // $this->call(ProgramSeeder::class);
         // $this->call(ReceipientSeeder::class);
     }
 }
