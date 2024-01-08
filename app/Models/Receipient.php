@@ -78,4 +78,9 @@ class Receipient extends Model
     {
         return $this->hasMany(IndividualSchedularRecipient::class, 'recipient_id');
     }
+
+    public function recipientProgram()
+    {
+        return $this->hasMany(RecipientProgram::class, 'recipient_id');
+    }
 }

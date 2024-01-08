@@ -71,4 +71,9 @@ class Program extends Model
     {
         return $this->hasMany(Receipient::class, 'program_id');
     }
+
+    public function recipientPrograms()
+    {
+        return $this->hasMany(RecipientProgram::class, 'program_id');
+    }
 }

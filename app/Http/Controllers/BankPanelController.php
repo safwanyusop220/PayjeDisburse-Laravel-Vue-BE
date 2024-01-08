@@ -12,9 +12,6 @@ class BankPanelController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->get('search');
-        $search = $request->get('page');
-        $search = $request->get('offset');
         $bankPanels = BankPanel::with('bank')->orderBy('id', 'desc')->get();
 
         return response()->json([

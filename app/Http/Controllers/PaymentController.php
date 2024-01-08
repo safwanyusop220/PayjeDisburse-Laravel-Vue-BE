@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Payment;
 use App\Models\Receipient;
+use App\Models\RecipientProgram;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
@@ -33,14 +34,17 @@ class PaymentController extends Controller
     public function recipientList($id, Request $request)
     {
 
-        $programData = Payment::with('program', 'program.type', 'program.frequency', 'program.recipients', 'program.recipients.individualRecipient')->find($id);
+        $programData = Payment::with('program', 'program.bankPanel', 'program.bankPanel.bank', 'program.type', 'program.frequency', 'program.recipients', 'program.recipients.individualRecipient')->find($id);
 
-        $recipientList = Receipient::with('individualRecipient', 'program')->where('program_id', $id)->where('status_id', 3)
+        $recipientList = RecipientProgram::with('recipient', 'recipient.individualRecipient', 'recipient.bank', 'program')->where('program_id', $id)->where('status_id', 3)
         ->orderBy('id', 'desc')->get();
+
+        $recipientCount = $recipientList->count();
 
         return response()->json([
             'programData' => $programData,
             'recipients' => $recipientList,
+            'recipientCount' => $recipientCount,
         ]);
     }
 }
